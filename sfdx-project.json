@@ -10,6 +10,9 @@
       "dependencies": [
         {
           "package": "fflibApexExtensions@0.8.0-1"
+        },
+        {
+          "package": "NebulaLogger-Core@4.17.4"
         }
       ]
     }
@@ -21,6 +24,7 @@
   "packageAliases": {
     "fflibApexExtensions": "0HoJ8000000KyjfKAC",
     "fflibApexExtensions@0.8.0-1": "04tJ8000000kaL4IAI",
+    "NebulaLogger-Core@4.17.4": "04tg70000004jmXAAQ",
     "sflib": "0HoJ8000000KyjkKAC"
   }
 }

@@ -3,10 +3,11 @@
 A library of reusable components for the [Salesforce](https://www.salesforce.com) platform.
 
 **Dependencies:**<br/>
-This extension package is dependent on the following packages:
+This package is dependent on the following packages:
 - [fflib-apex-mocks](https://github.com/apex-enterprise-patterns/fflib-apex-mocks)
 - [fflib-apex-common](https://github.com/apex-enterprise-patterns/fflib-apex-common)
 - [fflib-apex-extensions](https://github.com/wimvelzeboer/fflib-apex-extensions)
+- [Nebula Logger](https://github.com/jongpie/NebulaLogger)
 
 ## Installation
 
