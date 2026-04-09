@@ -2,17 +2,24 @@
 
 A library of reusable components for the [Salesforce](https://www.salesforce.com) platform.
 
-## How Do You Plan to Deploy Your Changes?
+**Dependencies:**<br/>
+This extension package is dependent on the following packages:
+- [fflib-apex-mocks](https://github.com/apex-enterprise-patterns/fflib-apex-mocks)
+- [fflib-apex-common](https://github.com/apex-enterprise-patterns/fflib-apex-common)
+- [fflib-apex-extensions](https://github.com/wimvelzeboer/fflib-apex-extensions)
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+## Installation
 
-## Configure Your Salesforce DX Project
+The package is available as an Unlocked Managed Package (2GP) with package ID `0HoJ8000000KyjkKAC`.
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+Either clone the repository and import the package manually, use the [Package Installation URL](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t000000000000000)
+or execute the following SFDX CLI command in your terminal:
+```bash
+sf package install --package 04t000000000000000 --wait=10 --target-org $YOUR_ORG_ALIAS
+```
+_Replace `$YOUR_ORG_ALIAS` with the alias of your target org_
 
-## Read All About It
+## Package version log
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+| Package version | Package ID         | Description                    |
+|-----------------|--------------------|--------------------------------|

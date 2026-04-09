@@ -1,12 +1,26 @@
 {
   "packageDirectories": [
     {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
       "path": "force-app",
-      "default": true
+      "default": true,
+      "package": "sflib",
+      "versionDescription": "A Library of reusable Salesforce components",
+      "dependencies": [
+        {
+          "package": "fflibApexExtensions@0.8.0-1"
+        }
+      ]
     }
   ],
   "name": "sflib",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "66.0"
+  "sourceApiVersion": "66.0",
+  "packageAliases": {
+    "fflibApexExtensions": "0HoJ8000000KyjfKAC",
+    "fflibApexExtensions@0.8.0-1": "04tJ8000000kaL4IAI",
+    "sflib": "0HoJ8000000KyjkKAC"
+  }
 }

@@ -1,0 +1,70 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Salesforce CLI with NPM
+        run: npm install @salesforce/cli --global
+
+      - name: Authorize with the dev hub
+        run: echo "${{ secrets.SFDX_AUTH_URL }}" | sf org login sfdx-url --alias SFDX-ENV --set-default-dev-hub --sfdx-url-stdin
+
+      - name: Setup the config parameters needed
+        run: |
+          sf config set target-dev-hub SFDX-ENV --global
+
+      - name: Setup Git Configuration
+        run: |
+          git config --local user.name github-actions
+          git config --local user.email github-actions@github.com  
+
+      - name: Get branch name
+        id: get-branch-name
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "Branch name: ${{ github.head_ref }}"
+            echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "Branch name: ${GITHUB_REF#refs/heads/}"
+            echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Package Version
+        run: |
+          echo "Creating new BETA package version"
+          OUTPUT=`sf package version create --installation-key-bypass --package "sflib" --code-coverage -w 30 --definition-file config/project-scratch-def.json --branch ${{ steps.get-branch-name.outputs.BRANCH_NAME }}`
+          echo "$OUTPUT"
+          [ $? -eq 0 ] && echo "successful" || exit 1
+          
+          STRING=`echo "$OUTPUT" | grep 'Package Version Id:'`
+          VERSION_ID="${STRING##*: }"
+          VERSION=`grep $VERSION_ID sfdx-project.json | cut -d "@" -f2 | cut -d "\"" -f1`
+          echo "Created BETA package version: $VERSION with Id: $VERSION_ID"
+          
+          git commit -am "New package version $VERSION created"
+          
+          echo "PACKAGE_ID=$VERSION_ID" >> "$GITHUB_ENV"
+          echo "PACKAGE_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Push changes to GIT
+        run: |
+          git push

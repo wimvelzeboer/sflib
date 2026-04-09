@@ -1,0 +1,96 @@
+name: Publish a new package version
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - closed
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          token: ${{ secrets.CI_PAT }}
+          fetch-depth: 0
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Salesforce CLI with NPM
+        run: npm install @salesforce/cli --global
+
+      - name: Authorize with the dev hub
+        run: echo "${{ secrets.SFDX_AUTH_URL }}" | sf org login sfdx-url --alias SFDX-ENV --set-default-dev-hub --sfdx-url-stdin
+
+      - name: Setup the config parameters needed
+        run: |
+          sf config set target-dev-hub SFDX-ENV --global
+
+      - name: Fetching Latest Package Version Id
+        run: |
+          VERSION_ID=`cat sfdx-project.json | jq -r '.packageAliases | to_entries | [last] | .[0].value '`
+          echo "Version ID: $VERSION_ID"
+          
+          JSON=`sf package version list --packages "sflib" --target-dev-hub SFDX-ENV --json`
+          DATA=`echo "$JSON" | jq -r --arg VERSION "$VERSION_ID" '.result | .[] | select(.SubscriberPackageVersionId == $VERSION)'`
+          
+          VERSION_NUMBER=`echo "$DATA" | jq -r '.Version'`
+          echo "Version: $VERSION_NUMBER"
+          
+          VERSION_NAME=`echo "$DATA" | jq -r '.Name'`
+          echo "Version Name: $VERSION_NAME"
+          
+          echo "PACKAGE_VERSION_ID=$VERSION_ID" >> "$GITHUB_ENV"
+          echo "PACKAGE_VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"          
+          echo "PACKAGE_VERSION=$VERSION_NUMBER" >> "$GITHUB_ENV"
+
+      - name: Promoting BETA Package Version
+        run: |
+          sf package version promote --package $PACKAGE_VERSION_ID --target-dev-hub SFDX-ENV --no-prompt
+
+      - name: Update package version
+        run: |
+          echo "Increasing package versionName"
+          NEW_PACKAGE_VERSION_NAME=`echo "ver $(echo "$PACKAGE_VERSION" | cut -d ' ' -f2 | cut -d '.' -f1).$(expr "$(echo "$PACKAGE_VERSION" | cut -d ' ' -f2 | cut -d '.' -f2)" + 1)"`
+          echo "Current package version name: $PACKAGE_VERSION"
+          echo "New package version name: $NEW_PACKAGE_VERSION_NAME"
+          cat sfdx-project.json | jq -r  --arg VERSION "$NEW_PACKAGE_VERSION_NAME" '.packageDirectories |= map(select(.package == "sflib").versionName = $VERSION)' > tmp.json
+          mv tmp.json sfdx-project.json
+          
+          echo "Increasing package versionNumber"
+          NEW_PACKAGE_VERSION=`echo "$(echo "$NEW_PACKAGE_VERSION_NAME" | cut -d ' ' -f2).0.NEXT"`
+          echo "Current package version: $PACKAGE_VERSION"
+          echo "New package version: $NEW_PACKAGE_VERSION"          
+          cat sfdx-project.json | jq -r  --arg VERSION "$NEW_PACKAGE_VERSION" '.packageDirectories |= map(select(.package == "sflib").versionNumber = $VERSION)' > tmp.json
+          mv tmp.json sfdx-project.json
+          
+          echo "NEW_PACKAGE_VERSION_NAME=$NEW_PACKAGE_VERSION_NAME" >> "$GITHUB_ENV"
+          echo "NEW_PACKAGE_VERSION=$NEW_PACKAGE_VERSION" >> "$GITHUB_ENV"
+
+      - name: Appending to package version log
+        run: |
+          DT=$(date '+%d/%m/%Y %H:%M:%S');
+          echo "| $PACKAGE_VERSION | $PACKAGE_VERSION_ID | Created on $DT |" >> README.md
+          REPLACEMENT="sf package install --package $PACKAGE_VERSION_I0--wait=10 --target-org YOUR_ORG_ALIAS"
+          sed -i 's|^sf package install.*|sf package install --package '$PACKAGE_VERSION_ID' --wait=10 --target-org $YOUR_ORG_ALIAS|' README.md 
+          sed -i 's|^Either clone the repository.*|Either clone the repository and import the package manually, use the [Package Installation URL](https://login.salesforce.com/packaging/installPackage.apexp?p0='$PACKAGE_VERSION_ID')|' README.md 
+
+      - name: Committing and pushing changes
+        run: |
+          git config --local user.name github-actions
+          git config --local user.email github-actions@github.com
+          git add sfdx-project.json
+          git add README.md
+          git commit -am "Update package version to $NEW_PACKAGE_VERSION"
+          git tag -a "v$PACKAGE_VERSION" -m "Release Version $PACKAGE_VERSION" -m "" -m "Package Version Id: $PACKAGE_VERSION_ID"   
+          git push origin main --tags

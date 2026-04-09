@@ -1,6 +1,8 @@
 {
   "orgName": "sflib",
   "edition": "Developer",
+  "country": "US",
+  "language": "en_US",
   "features": ["EnableSetPasswordInApi"],
   "settings": {
     "lightningExperienceSettings": {
