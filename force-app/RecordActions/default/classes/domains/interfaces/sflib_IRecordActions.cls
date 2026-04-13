@@ -28,6 +28,13 @@ public interface sflib_IRecordActions extends fflib_ISObjects2
 	List<sflib_RecordAction__c> getRecordActions();
 
 	/**
+	 * Gets the record Id List in the order which they are stored inside the domain
+	 *
+	 * @return Returns an ordered list of `sflib_RecordAction__c.Id` values
+	 */
+	List<Id> getRecordIdList();
+
+	/**
 	 * Get the `sflib_RecordAction__c` records by their Id
 	 *
 	 * @return Returns a map of the `sflib_RecordAction__c` record by its `sflib_RecordAction__c.Id`

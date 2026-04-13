@@ -107,6 +107,19 @@ public virtual inherited sharing class sflib_RecordActions extends fflib_SObject
 	}
 
 	/**
+	 * Gets the record Id List in the order which they are stored inside the domain
+	 *
+	 * @return Returns an ordered list of `sflib_RecordAction__c.Id` values
+	 */
+	public List<Id> getRecordIdList() {
+		List<Id> results = new List<Id>();
+		for (SObject record : getRecords()) {
+			results.add(record.Id);
+		}
+		return results;
+	}
+
+	/**
 	 * Get the `sflib_RecordAction__c` records by their Id
 	 *
 	 * @return Returns a map of the `sflib_RecordAction__c` record by its `sflib_RecordAction__c.Id`
