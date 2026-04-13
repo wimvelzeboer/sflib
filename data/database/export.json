@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/forcedotcom/SFDX-Data-Move-Utility/main/schemas/export.schema.json",
+  "objects": [
+    {
+      "query": "SELECT Id, Name, Description__c, FlowName__c, Icon__c, Order__c, SObjectType__c, Status__c FROM sflib_RecordAction__c",
+      "operation": "Upsert",
+      "externalId": "Name"
+    },
+    {
+      "query": "SELECT Id, Name, Formula__c, Number__c, RecordAction__c, SObjectType__c FROM sflib_RecordActionCondition__c",
+      "operation": "Upsert",
+      "externalId": "Name"
+    }
+  ]
+}
