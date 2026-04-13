@@ -18,5 +18,6 @@ private class sflib_RecordActionsSelectorTest
 
 		selector.selectById(new Set<Id>());
 		selector.selectSObjectsById(new Set<Id>());
+		selector.selectBySObjectType(new Set<String>());
 	}
 }

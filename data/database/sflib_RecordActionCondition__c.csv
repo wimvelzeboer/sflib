@@ -1,3 +1,3 @@
 ﻿"Id","Name","Formula__c","Number__c","RecordAction__c","SObjectType__c","RecordAction__r.Name"
-"a01Fg00001QlZl4IAF","RAC0000000000","Status = ""New""","1","a00Fg00000mFkTWIA0","Case","Close Case"
-"a01Fg00001Qz4xGIAR","RAC0000000001","Status = ""New""","1","a00Fg00000mMHGJIA4","Case","Start Working Action"
+"a01Fg00001QlZl4IAF","RAC0000000000","TEXT(Status) = ""New""","1","a00Fg00000mFkTWIA0","Case","Close Case"
+"a01Fg00001Qz4xGIAR","RAC0000000001","TEXT(Status) = ""New""","1","a00Fg00000mMHGJIA4","Case","Start Working Action"

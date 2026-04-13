@@ -57,9 +57,10 @@ public with sharing class sflib_RecordActionsService
 	 *
 	 * @throws sflib_RecordActionsService.ServiceException on errors
 	 *
+	 * @see sflib_IRecordActions
 	 * @see sflib_RecordActions
 	 */
-	public static Map<Id, sflib_RecordActions> getActions(Set<Id> idSet)
+	public static Map<Id, sflib_IRecordActions> getActions(Set<Id> idSet)
 	{
 		return newInstance().getActions(idSet);
 	}

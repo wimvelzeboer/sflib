@@ -122,4 +122,31 @@ public virtual without sharing class sflib_RecordActionsSelector
 						.toSOQL()
 		);
 	}
+
+	/**
+	 * Queries sflib_RecordAction__c records by their SObjectType value
+	 *
+	 * @param sObjectTypeNames A set of `sflib_RecordAction__c.SObjectType__c` values
+	 *
+	 * @return A list of `sflib_RecordAction__c` records
+	 */
+	public List<sflib_RecordAction__c> selectBySObjectType(Set<String> sObjectTypeNames) {
+		fflib_QueryFactory queryFactory = newQueryFactory();
+
+		((fflib_SObjectSelector) sflib_RecordActionConditionsSelector.newInstance())
+				.addQueryFactorySubselect(
+						queryFactory,
+						'RecordActionConditions__r'
+				);
+
+		return Database.query(
+				queryFactory
+						.setCondition('SObjectType__c IN :sObjectTypeNames')
+						.toSOQL()
+		);
+	}
+
+	public override String getOrderBy() {
+		return 'Order__c ASC';
+	}
 }

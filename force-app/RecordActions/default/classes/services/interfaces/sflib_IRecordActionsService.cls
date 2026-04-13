@@ -46,6 +46,6 @@ public interface sflib_IRecordActionsService
 	 *
 	 * @see sflib_RecordActions
 	 */
-	Map<Id, sflib_RecordActions> getActions(Set<Id> idSet);
+	Map<Id, sflib_IRecordActions> getActions(Set<Id> idSet);
 }
  

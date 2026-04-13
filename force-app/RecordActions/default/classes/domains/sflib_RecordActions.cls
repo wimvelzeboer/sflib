@@ -39,6 +39,7 @@ public virtual inherited sharing class sflib_RecordActions extends fflib_SObject
 	 */
 	public static sflib_IRecordActions newInstance(List<sflib_RecordAction__c> records)
 	{
+		records.sort(new RecordActionComparator());
 		return new sflib_RecordActions(records);
 	}
 
@@ -136,6 +137,19 @@ public virtual inherited sharing class sflib_RecordActions extends fflib_SObject
 	public sflib_IRecordActions selectById(Set<Id> ids)
 	{
 		return new sflib_RecordActions(getRecords(ids));
+	}
+
+	/**
+	 * Gets a sub-selection of the `sflib_RecordAction__c` records matching the given SObject name
+	 *
+	 * @param sObjectName A `sflib_RecordAction__c.SObjectType__c` value
+	 *
+	 * @return Returns a new instance of the sflib_RecordActions domain containing the matching records
+	 *
+	 * @example sflib_IRecordActions subset = recordActions.selectBySObjectType('Account');
+	 */
+	public sflib_IRecordActions selectBySObjectType(String sObjectName) {
+		return new sflib_RecordActions(getRecords(Schema.sflib_RecordAction__c.SObjectType__c, sObjectName));
 	}
 
 	/**
@@ -254,5 +268,17 @@ public virtual inherited sharing class sflib_RecordActions extends fflib_SObject
 			result.add(record);
 		}
 		return result;
+	}
+
+	/**
+	 * Compares two sflib_RecordAction__c records and sorts them by their order field
+	 */
+	private class RecordActionComparator implements Comparator<sflib_RecordAction__c> {
+		public Integer compare(sflib_RecordAction__c left, sflib_RecordAction__c right) {
+			// Handle null values: nulls sort to the end
+			if(left.Order__c == null) return 1;
+			if(right.Order__c == null) return -1;
+			return left.Order__c < right.Order__c ? -1 : 1;
+		}
 	}
 }

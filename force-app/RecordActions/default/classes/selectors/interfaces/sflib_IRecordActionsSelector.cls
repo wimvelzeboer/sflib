@@ -15,5 +15,14 @@ public interface sflib_IRecordActionsSelector
 	 */
 	List<sflib_RecordAction__c> selectById(Set<Id> idSet);
 
+	/**
+	 * Queries sflib_RecordAction__c records by their SObjectType value
+	 *
+	 * @param sObjectTypeNames A set of `sflib_RecordAction__c.SObjectType__c` values
+	 *
+	 * @return A list of `sflib_RecordAction__c` records
+	 */
+	List<sflib_RecordAction__c> selectBySObjectType(Set<String> sObjectTypeNames);
+
 	fflib_SObjectSelector setDataAccess(fflib_SObjectSelector.DataAccess access);
 }

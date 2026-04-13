@@ -51,4 +51,15 @@ public interface sflib_IRecordActions extends fflib_ISObjects2
 	 * @example sflib_IRecordActions subset = recordActions.selectById(recordIds);
 	 */
 	sflib_IRecordActions selectById(Set<Id> ids);
+
+	/**
+	 * Gets a sub-selection of the `sflib_RecordAction__c` records matching the given SObject name
+	 *
+	 * @param sObjectName A `sflib_RecordAction__c.SObjectType__c` value
+	 *
+	 * @return Returns a new instance of the sflib_RecordActions domain containing the matching records
+	 *
+	 * @example sflib_IRecordActions subset = recordActions.selectBySObjectType('Account');
+	 */
+	sflib_IRecordActions selectBySObjectType(String sObjectName);
 }
