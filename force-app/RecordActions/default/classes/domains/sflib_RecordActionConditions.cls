@@ -1,0 +1,258 @@
+/**
+ * sflib_RecordActionConditions domain class
+ *
+ * This domain is a wrapper around sflib_RecordActionCondition__c records, and it contains getter,
+ * setter and filter (selector) methods.
+ *
+ * Getters retrieve field values from all the sflib_RecordActionCondition__c records in this domain
+ * Setters change field values on all the sflib_RecordActionCondition__c records in this domain
+ * Selectors filter the contents of this domain
+ *
+ * The getter, setter and selector methods always targets (iterate over)
+ * all the records the domain contains.
+ * First use a selector, when a certain setter or getter method should target
+ * only a subset.
+ *
+ * The only concern/context known to this domain is the List of sflib_RecordActionCondition__c records
+ * it encapsulates. It is not aware of anything outside this domain,
+ * so there should be no references to other classes or object types besides
+ * the classes it is extended from
+ *
+ * @see sflib_IRecordActionConditions
+ *
+ * @example
+ * Map<Id, sflib_RecordActionCondition__c> recordActionConditionsById =
+ *              sflib_RecordActionConditions.newInstance(recordIds)
+ *                      .selectBySomeField('Holland')
+ *                      .getById();
+ */
+public virtual inherited sharing class sflib_RecordActionConditions extends fflib_SObjects2 implements sflib_IRecordActionConditions
+{
+	/**
+	 * Class constructor
+	 *
+	 * @param records Constructs the domain with the given records
+	 *
+	 * @return Returns a new instance of the sflib_RecordActionConditions domain
+	 *
+	 * @see sflib_IRecordActionConditions
+	 */
+	public static sflib_IRecordActionConditions newInstance(List<sflib_RecordActionCondition__c> records)
+	{
+		return new sflib_RecordActionConditions(records);
+	}
+
+	/**
+	 * Class constructor
+	 *
+	 * @param ids Constructs the domain by querying the given record Ids
+	 *
+	 * @return Returns a new instance of the sflib_RecordActionConditions domain
+	 *
+	 * @see sflib_IRecordActionConditions
+	 * @see sflib_RecordActionConditionsSelector
+	 */
+	public static sflib_IRecordActionConditions newInstance(Set<Id> ids)
+	{
+		return new sflib_RecordActionConditions(sflib_RecordActionConditionsSelector.newInstance().selectById(ids));
+	}
+
+	/**
+	 * Class constructor
+	 *
+	 * @param ids Constructs the domain by querying the given record Ids in a SYSTEM_MODE context
+	 *
+	 * @return Returns a new instance of the sflib_RecordActionConditions domain
+	 *
+	 * @see sflib_IRecordActionConditions
+	 * @see sflib_RecordActionConditionsSelector
+	 */
+	public static sflib_IRecordActionConditions newElevatedInstance(Set<Id> ids)
+	{
+		return new sflib_RecordActionConditions(sflib_RecordActionConditionsSelector.newElevatedInstance().selectById(ids));
+	}
+
+	/**
+	 * Class constructor
+	 *
+	 * Avoid instantiating this constructor directly, instead use the static newInstance methods
+	 *
+	 * @param records A list of `sflib_RecordActionCondition__c` records
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 */
+	@TestVisible
+	protected sflib_RecordActionConditions(List<sflib_RecordActionCondition__c> records)
+	{
+		super(records, Schema.sflib_RecordActionCondition__c.SObjectType);
+	}
+
+	/**
+	 * Get the `sflib_RecordActionCondition__c` records the domain contains
+	 *
+	 * @return Returns the list of `sflib_RecordActionCondition__c` records
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * List<sflib_RecordActionCondition__c> filteredRecordActionConditions =
+	 *         sflib_RecordActionConditions.newInstance(recordIds)
+	 *                 .selectBySomeField('Holland')
+	 *                 .getRecordActionConditions();
+	 */
+	public List<sflib_RecordActionCondition__c> getRecordActionConditions()
+	{
+		return getRecords();
+	}
+
+	/**
+	 * Get the `sflib_RecordActionCondition__c` records by their Id
+	 *
+	 * @return Returns a map of the `sflib_RecordActionCondition__c` record by its `sflib_RecordActionCondition__c.Id`
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * Map<Id, sflib_RecordActionCondition__c> recordActionConditionsById =
+	 *         sflib_RecordActionConditions.newInstance(recordIds)
+	 *                 .getById();
+	 */
+	public Map<Id, sflib_RecordActionCondition__c> getById()
+	{
+		return new Map<Id, sflib_RecordActionCondition__c>(getRecordActionConditions());
+	}
+
+	/**
+	 * Gets a sub-selection of the `sflib_RecordActionCondition__c` records matching the given ids
+	 *
+	 * @param ids A set of `sflib_RecordActionCondition__c.Id` values
+	 *
+	 * @return Returns a new instance of the sflib_RecordActionConditions domain containing the matching records
+	 *
+	 * @see sflib_IRecordActionConditions
+	 *
+	 * @example sflib_IRecordActionConditions subset = recordActionConditions.selectById(recordIds);
+	 */
+	public sflib_IRecordActionConditions selectById(Set<Id> ids)
+	{
+		return new sflib_RecordActionConditions(getRecords(ids));
+	}
+
+	/**
+	 * Gets a sub-selection of the sflib_RecordActionConditions records where the given (String) field is blank
+	 *
+	 * @param sObjectField A String field on the `sflib_RecordActionCondition__c` object
+	 *
+	 * @return Returns a list of `sflib_RecordActionCondition__c` records containing only the matching records
+	 *
+	 * @see sflib_IRecordActionConditions
+	 * @see Schema.SObjectField
+	 *
+	 * @example
+	 * public sflib_IRecordActionConditions selectWithBlankName()
+	 * {
+	 *     return new sflib_RecordActionConditions(selectBlank(Schema.sflib_RecordActionCondition__c.Name));
+	 * }
+	 */
+	@TestVisible
+	protected List<sflib_RecordActionCondition__c> selectBlank(Schema.SObjectField sObjectField)
+	{
+		List<sflib_RecordActionCondition__c> result = new List<sflib_RecordActionCondition__c>();
+		for (sflib_RecordActionCondition__c record : getRecordActionConditions())
+		{
+			if (String.isNotBlank(String.valueOf(record.get(sObjectField)))) continue;
+
+			result.add(record);
+		}
+		return result;
+	}
+
+	/**
+	 * Gets a sub-selection of the sflib_RecordActionConditions records where the given (String) field is not blank
+	 *
+	 * @param sObjectField A String field on the `sflib_RecordActionCondition__c` object
+	 *
+	 * @return Returns a list of `sflib_RecordActionCondition__c` records containing only the matching records
+	 *
+	 * @see sflib_IRecordActionConditions
+	 * @see Schema.SObjectField
+	 *
+	 * @example
+	 * public sflib_IRecordActionConditions selectWithName()
+	 * {
+	 *     return new sflib_RecordActionConditions(selectNonBlank(Schema.sflib_RecordActionCondition__c.Name));
+	 * }
+	 */
+	@TestVisible
+	protected List<sflib_RecordActionCondition__c> selectNonBlank(Schema.SObjectField sObjectField)
+	{
+		List<sflib_RecordActionCondition__c> result = new List<sflib_RecordActionCondition__c>();
+		for (sflib_RecordActionCondition__c record : getRecordActionConditions())
+		{
+			if (String.isBlank(String.valueOf(record.get(sObjectField)))) continue;
+
+			result.add(record);
+		}
+		return result;
+	}
+
+	/**
+	 * Gets a sub-selection of the sflib_RecordActionConditions records where the given field is not null
+	 * Tip: use selectNonBlank for String fields
+	 *
+	 * @param sObjectField A field on the `sflib_RecordActionCondition__c` object
+	 *
+	 * @return Returns a list of `sflib_RecordActionCondition__c` records containing only the matching records
+	 *
+	 * @see sflib_IRecordActionConditions
+	 * @see Schema.SObjectField
+	 *
+	 * @example
+	 * public sflib_IRecordActionConditions selectExistingRecords()
+	 * {
+	 *     return new sflib_RecordActionConditions(selectWith(Schema.sflib_RecordActionCondition__c.Name));
+	 * }
+	 */
+	@TestVisible
+	protected List<sflib_RecordActionCondition__c> selectWith(Schema.SObjectField sObjectField)
+	{
+		List<sflib_RecordActionCondition__c> result = new List<sflib_RecordActionCondition__c>();
+		for (sflib_RecordActionCondition__c record : getRecordActionConditions())
+		{
+			if (record.get(sObjectField) == null) continue;
+
+			result.add(record);
+		}
+		return result;
+	}
+
+	/**
+	 * Gets a sub-selection of the sflib_RecordActionConditions records where the given field is null
+	 * Tip: use selectBlank for String fields
+	 *
+	 * @param sObjectField A field on the `sflib_RecordActionCondition__c` object
+	 *
+	 * @return Returns a list of `sflib_RecordActionCondition__c` records containing only the matching records
+	 *
+	 * @see sflib_IRecordActionConditions
+	 * @see Schema.SObjectField
+	 *
+	 * @example
+	 * public sflib_IRecordActionConditions selectNewRecords()
+	 * {
+	 *     return new sflib_RecordActionConditions(selectWithout(Schema.sflib_RecordActionCondition__c.Name));
+	 * }
+	 */
+	@TestVisible
+	protected List<sflib_RecordActionCondition__c> selectWithout(Schema.SObjectField sObjectField)
+	{
+		List<sflib_RecordActionCondition__c> result = new List<sflib_RecordActionCondition__c>();
+		for (sflib_RecordActionCondition__c record : getRecordActionConditions())
+		{
+			if (record.get(sObjectField) != null) continue;
+
+			result.add(record);
+		}
+		return result;
+	}
+}
