@@ -1,7 +1,7 @@
 <!-- SFLib Record Actions -->
 <template>
     <lightning-card title={title} icon-name={iconName}>
-        <div lwc:if={showMenu}>
+        <div slot="actions" lwc:if={showMenu}>
             <lightning-button-menu alternative-text="Show Options" variant="bare" menu-alignment="right">
                 <lightning-menu-item
                         lwc:if={historyEnabled}

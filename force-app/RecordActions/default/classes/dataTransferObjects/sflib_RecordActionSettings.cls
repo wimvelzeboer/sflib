@@ -30,7 +30,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class sflib_RecordActionSettings {
+
     @AuraEnabled public Boolean historyLog { get; set; }
+    @AuraEnabled public Boolean militaryTime { get; set; }
+
 
     /**
      * The implementation replacement for the service,
@@ -65,6 +68,7 @@ public class sflib_RecordActionSettings {
      */
     public sflib_RecordActionSettings(sflib_RecordActionConfig__c config) {
         this.historyLog = config.HistoryLog__c ?? false;
+        this.militaryTime = config.MilitaryTime__c ?? false;
     }
 
     /**
@@ -99,6 +103,7 @@ public class sflib_RecordActionSettings {
         if (setting == null) setting = new sflib_RecordActionConfig__c();
 
         setting.HistoryLog__c = this.historyLog ?? false;
+        setting.MilitaryTime__c = this.militaryTime ?? false;
 
         upsert setting;
         return this;

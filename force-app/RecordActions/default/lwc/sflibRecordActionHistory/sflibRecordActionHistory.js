@@ -46,28 +46,8 @@
 import {api, wire} from "lwc";
 import LightningModal from 'lightning/modal';
 import getHistory from '@salesforce/apex/sflib_RecordActionHistoryController.getHistory';
+import getSettings from '@salesforce/apex/sflib_RecordActionConfigController.getConfig';
 import {ShowToastEvent} from 'lightning/platformShowToastEvent';
-
-const columns = [
-    {label: 'Action Name', fieldName: 'actionName', sortable: true},
-    {
-        label: 'Date',
-        fieldName: 'createdDate',
-        type: 'date',
-        typeAttributes: {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: true
-        },
-        sortable: true,
-    },
-    {label: 'Status', fieldName: 'status', sortable: true},
-    {label: 'User', fieldName: 'userName', sortable: true},
-];
 
 export default class SflibRecordActionHistory extends LightningModal {
 
@@ -75,6 +55,8 @@ export default class SflibRecordActionHistory extends LightningModal {
      * The record Id for which to show the Record Action history
      */
     @api recordId;
+
+    @api militaryTime = false;
 
     /**
      * The columns to display in the lightning data table
@@ -93,7 +75,26 @@ export default class SflibRecordActionHistory extends LightningModal {
      *          hour12: boolean},
      *      sortable: boolean}[]}
      */
-    columns = columns;
+    columns =[
+        {label: 'Action Name', fieldName: 'actionName', sortable: true},
+        {
+            label: 'Date',
+            fieldName: 'createdDate',
+            type: 'date',
+            typeAttributes: {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+            },
+            sortable: true,
+        },
+        {label: 'Status', fieldName: 'status', sortable: true},
+        {label: 'User', fieldName: 'userName', sortable: true},
+    ];
 
     /**
      * Holds the history of the record actions
@@ -120,6 +121,18 @@ export default class SflibRecordActionHistory extends LightningModal {
     sortedDirection = 'asc';
 
     /**
+     * Holds the settings for the Record Actions feature
+     * @type {{
+     *      historyLog:boolean,
+     *      militaryTime:boolean
+     * }}
+     * @private
+     */
+    _settings = {
+        historyLog: false
+    };
+
+    /**
      * Wires the history list to the component
      * @param error
      * @param data
@@ -134,6 +147,21 @@ export default class SflibRecordActionHistory extends LightningModal {
             this.data = data;
         }
         this.isLoading = false;
+    }
+
+    /**
+     * Loads the actions settings
+     */
+    @wire(getSettings, {})
+    getWiredSettings({error, data}) {
+        if (error) {
+            console.error(error);
+        }
+        if (data) {
+            // reload actions whenever the record changes
+            this._settings = data;
+            this.rebuildColumns();
+        }
     }
 
     /**
@@ -159,6 +187,41 @@ export default class SflibRecordActionHistory extends LightningModal {
      */
     get hasData() {
         return this.data.length > 0;
+    }
+
+    /**
+     * Indicates whether the military time format is enabled
+     * @return {boolean}
+     */
+    get isMilitaryTime() {
+        return this._settings.militaryTime ?? false;
+    }
+
+    /**
+     * Re applies the columns based on the settings
+     */
+    rebuildColumns() {
+        this.columns = [
+            {label: 'Action Name', fieldName: 'actionName', sortable: true},
+            {
+                label: 'Date',
+                fieldName: 'createdDate',
+                type: 'date',
+                typeAttributes: {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    // hour12: true,
+                    hour12: !this._settings.militaryTime
+                },
+                sortable: true,
+            },
+            {label: 'Status', fieldName: 'status', sortable: true},
+            {label: 'User', fieldName: 'userName', sortable: true},
+        ];
     }
 
     /**

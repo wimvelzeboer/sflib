@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MilitaryTime__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indicates which time format is being used in the history log data table</description>
+    <inlineHelpText>Military time uses a 24-hour format (0000 to 2300) to eliminate ambiguity, whereas AM/PM relies on a 12-hour cycle that requires specifying morning or afternoon.</inlineHelpText>
+    <label>Use 24 Hour Format</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

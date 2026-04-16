@@ -146,7 +146,10 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
 
     /**
      * Holds the settings for the Record Actions feature
-     * @type {{historyLog: boolean}}
+     * @type {{
+     *      historyLog:boolean,
+     *      militaryTime:boolean
+     * }}
      * @private
      */
     _settings = {
@@ -174,6 +177,7 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     getWiredRecord({error, data}) {
         if (error) {
             console.error(error);
+            this.showError('Error retrieving Record data: ' + error.body.message);
         }
         if (data) {
             // reload actions whenever the record changes
@@ -188,6 +192,7 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     getWiredSettings({error, data}) {
         if (error) {
             console.error(error);
+            this.showError('Error retrieving Record Actions settings: ' + error.body.message);
         }
         if (data) {
             // reload actions whenever the record changes

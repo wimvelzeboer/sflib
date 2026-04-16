@@ -10,8 +10,20 @@
                     type="toggle"
                     label="Enable History Log"
                     name="historyLog"
+                    message-toggle-active="Enabled"
+                    message-toggle-inactive="Disabled"
                     checked={historyLog}
                     onchange={handleHistoryLogChange}>
+            </lightning-input>
+
+            <lightning-input
+                    type="toggle"
+                    label="Use 24 hour"
+                    message-toggle-active="24 Hour"
+                    message-toggle-inactive="AM/PM"
+                    name="militaryTime"
+                    checked={militaryTime}
+                    onchange={handleMilitaryTimeChange}>
             </lightning-input>
 
         </div>

@@ -22,10 +22,10 @@ Tabs:
  - Record Action Settings<br/>To manage Record Action settings
 
  
-![Record Actions Setup Detail](./docs/feature/record-action_setup-detail.png "Record Actions Setup Detail")
+![Record Actions Setup Detail](./docs/feature/record-action_setup-detail.png "Record Actions Setup Detail")<br/>
 _Actions Detail page of the 'Record Actions Setup' Lightning App._
 
-![Record Actions Setup Settings](./docs/feature/record-action_setup-settings.png "Record Actions Setup Settings")
+![Record Actions Setup Settings](./docs/feature/record-action_setup-settings.png "Record Actions Setup Settings")<br/>
 _Configurable settings can be managed under the settings tab_
 
 ### Record Actions
