@@ -22,6 +22,13 @@ sf package install --package 04t000000000000000 --wait=10 --target-org $YOUR_ORG
 _Replace `$YOUR_ORG_ALIAS` with the alias of your target org_
 
 
+## Component Library
+|                                                     |                                                                                                                                  |
+|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| ![Record Actions](./docs/feature/record-action.png) | [Record Actions](./docs/feature/record-action.md)<br/>Listing of record specific actions which are based on configurable fomulas |
+|                                                     |                                                                                                                                  |
+
+
 ## Usage
 
 ### Test data
@@ -32,11 +39,12 @@ Test data is available in the `data` folder, with has two subfolders:
 To import the test data, first make sure you have the [SFDX CLI](https://developer.salesforce.com/tools/sfdxcli) installed with the [Salesforce Data Move Utility](https://github.com/forcedotcom/SFDX-Data-Move-Utility?tab=readme-ov-file#installation-instructions) plugin.
 Then deploy the metadata to your org:
 ```bash
-sf project deploy start --source-dir ./data/force-app/
+sf project deploy start --source-dir ./data-packages/force-app/
 ```
 Finally import the test data:
 ```bash
-
+cd data-packages/database
+sf sfdmu run --sourceusername csvfile --targetusername $ORG_ALIAS
 ```
 
 

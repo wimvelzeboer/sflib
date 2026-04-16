@@ -139,9 +139,13 @@ public virtual without sharing class sflib_RecordActionsSelector
 						'RecordActionConditions__r'
 				);
 
+		Set<String> statuses = new Set<String>{
+				'Active'
+		};
+
 		return Database.query(
 				queryFactory
-						.setCondition('SObjectType__c IN :sObjectTypeNames')
+						.setCondition('SObjectType__c IN :sObjectTypeNames AND Status__c IN :statuses')
 						.toSOQL()
 		);
 	}

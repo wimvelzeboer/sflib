@@ -4,69 +4,29 @@ The record actions feature allows you to offer a list of actions to users on a r
 
 A record action is an action that can be performed on a record, by invoking a screen-flow. Listed actions are filtered based on a configured set of criteria.
 
+The actions are displayed in a list or tiles view. It can contain an action menu at the top right corner, when there are items to show (eg. history is enabled or the current user is an record action manager).
 
-## Dependencies
-This extension package is dependent on the following packages:
-- [fflib-apex-mocks](https://github.com/apex-enterprise-patterns/fflib-apex-mocks)
-- [fflib-apex-common](https://github.com/apex-enterprise-patterns/fflib-apex-common)
-- [fflib-apex-extensions](https://github.com/wimvelzeboer/fflib-apex-extensions)
-- [Nebula Logger](https://github.com/jongpie/NebulaLogger)
+![List View](./docs/feature/record-action_list-view.png "List View")
 
-## UI components
-- Record Action List
-- Action Tile
-
-### Record Action
-A list of actions that meet the configured criteria.
-
-#### Attributes
-| Attribute   | Description                                                                              |
-|-------------|------------------------------------------------------------------------------------------|
-| `icon-name` | The name of the icon to display                                                          |
-| `record-id` | The record Id for which to show the actions                                              |
-| `title`     | The title of the list                                                                    |
-| `variant`   | The variant type of how the component displays.<br/>Valid values include `list`, `tiles` |
-
-#### Slots
-| Slot   | Description                          |
-|--------|--------------------------------------|
-| header | The header above the list of actions |
-| footer | The footer of the list               |
-
-#### Examples
-```html
-<template>
-        <sflib-record-actions
-                title="Case Record Actions" 
-                icon-name="custom:custom102"
-                record-id={recordId}
-                variant="tiles">
-            <div slot="header">
-                <p>Please select any of the following actions</p>
-            </div>
-            <div slot="footer">
-                <p>
-                    Can't find the action you are looking for?
-                    Then please contact your System Administrator
-                </p>
-            </div>
-        </sflib-record-actions>
-    </div>
-</template>
-```
+![tiles](./docs/feature/record-action_tile-view.png "Tiles View")
 
 
 ## Configurational options
 Record actions can be configured to in the `Record Actions Setup` App.
 
+![Record Actions Setup](./docs/feature/record-action_setup.png "Record Actions Setup")
+
 This app holds the record actions, offered by the SFLib Record Action feature and the record action settings.
 Tabs:
- - Record Actions, 
-   - `sflib_RecordAction__c`
-   - Icon: Lightning
- - Record Action Settings
-   - LWC component that modified the custom setting `sflib_RecordActionSetting__c`
-   - Icon: Gear
+ - Record Actions,<br/>Where actions can be configured 
+ - Record Action Settings<br/>To manage Record Action settings
+
+ 
+![Record Actions Setup Detail](./docs/feature/record-action_setup-detail.png "Record Actions Setup Detail")
+_Actions Detail page of the 'Record Actions Setup' Lightning App._
+
+![Record Actions Setup Settings](./docs/feature/record-action_setup-settings.png "Record Actions Setup Settings")
+_Configurable settings can be managed under the settings tab_
 
 ### Record Actions
 Showing actions based on a formula with conditions like
@@ -133,35 +93,61 @@ erDiagram
 
 ## LWC Components
 
-### Action Center Tile
-- Avonni Card
-    - Icon
-    - Title
-    - Body
-        - Description
-        - 'Start Action' Button
+### Record Action 
+`c-sflib-record-actions`
 
-### Action Center
-A list of tiles ordered by `Order__c` that meet the conditions in `Formula__c` and `ActionCondition__c`.
+A list of actions that meet the configured criteria.
+
+__For Use In__
+
+Lightning Experience Components, Lightning Pages, Standaline Lightning App
+
+#### Attributes
+| Attribute   | Description                                                                             | Type   | Default          | Required |
+|-------------|-----------------------------------------------------------------------------------------|--------|------------------|----------|
+| `record-id` | The record Id for which to show the actions                                             | String |                  | Yes      |
+| `title`     | The title of the component                                                              | String | `Actions`        |
+| `variant`   | The variant type of how the component displays.<br/>Valid values are `list` and `tiles` | Enum   | `list`           |
+| `icon-name` | The name of the icon to display                                                         | String | `custom:custom9` | 
+
+#### Methods
+The component has no methods.
+
+### Example
+```html
+<template>
+    <c-sflib-record-actions
+         record-id={recordId}
+         variant="tiles"
+    ></c-sflib-record-actions>
+</template>
+```
+
+![tiles](./docs/feature/record-action_tile-view.png "Tiles View")
+
 
 ## Permissions
-Users with the permission 'Record Action User' are able to perform the following actions:
+There are two permission sets for the Record Actions feature.
+- Record Action User `sflib_RecordActionUSer`
+- Record Action Administrator `sflib_RecordActionAdmin`
+
+The user permissions set enables the following actions:
 - 'execute' Record actions and list action history
 - `View` on `sflib_RecordAction__c`
 - `View` on `sflib_RecordActionCondition__c`
 - `View` on `sflib_RecordActionHistory__c`
 
-Administrators with the permission 'Record Action Administrator', 
-have access to the 'Record Actions Setup' App 
+Administrators have access to the 'Record Actions Setup' App 
 where they are able to perform the following actions:
 - `CRUD` on `sflib_RecordAction__c` and `sflib_RecordActionCondition__c`
 - `Edit` on `sflib_RecordActionHistory__c`
+- `Edit` on settings (using the Settings Tab) 
 
 ## Dependencies
 This extension package is dependent on the following packages:
 - [fflib-apex-mocks](https://github.com/apex-enterprise-patterns/fflib-apex-mocks)
 - [fflib-apex-common](https://github.com/apex-enterprise-patterns/fflib-apex-common)
-- [Nebula Logger](https://github.com/jongpie/NebulaLogger)
+- [fflib-apex-extensions](https://github.com/wimvelzeboer/fflib-apex-extensions)
 - System.FormulaEval, used to evaluate the conditions in `Formula__c`
 
 ## Limitations
