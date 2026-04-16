@@ -1,3 +1,0 @@
-﻿"Id","Name","Description__c","FlowName__c","Icon__c","Order__c","SObjectType__c","Status__c"
-"a00Fg00000mFkTWIA0","Close Case","Close a Case","Close_Case","#N/A","10","Case","Draft"
-"a00Fg00000mMHGJIA4","Start Working Action","Some Action for new cases","Close_Case","#N/A","10","Case","Active"

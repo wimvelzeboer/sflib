@@ -10,6 +10,16 @@
       "query": "SELECT Id, Name, Formula__c, Number__c, RecordAction__c, SObjectType__c FROM sflib_RecordActionCondition__c",
       "operation": "Upsert",
       "externalId": "Name"
+    },
+    {
+      "query": "SELECT Id, Name, LastName, FirstName FROM Contact",
+      "operation": "Upsert",
+      "externalId": "Name"
+    },
+    {
+      "query": "SELECT Id, CaseNumber, Subject, Status, Origin, Description, ContactId, AccountId FROM Case",
+      "operation": "Upsert",
+      "externalId": "CaseNumber"
     }
   ]
 }

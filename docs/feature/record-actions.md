@@ -1,6 +1,8 @@
 # Record Actions
 
-A record action is an action that can be performed on a record, by invoking a screenflow. Listed actions are filtered based on a configured set of criteria.
+The record actions feature allows you to offer a list of actions to users on a record.
+
+A record action is an action that can be performed on a record, by invoking a screen-flow. Listed actions are filtered based on a configured set of criteria.
 
 
 ## Dependencies

@@ -1,0 +1,18 @@
+/**
+ * Created by me on 4/14/26.
+ */
+.clamped-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.action-btn {
+    display: none;
+}
+
+/* Show button when hovering the text container */
+.clamped-text:hover + .action-btn {
+    display: inline-block;
+}
