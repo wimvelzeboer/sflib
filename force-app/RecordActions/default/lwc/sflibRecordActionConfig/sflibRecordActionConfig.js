@@ -24,7 +24,7 @@ export default class SflibRecordActionConfig extends LightningElement {
                 this.isLoading = false;
             })
             .catch(error => {
-                console.log(error);
+                console.error(error);
                 this.isLoading = false;
             });
     }
@@ -37,16 +37,12 @@ export default class SflibRecordActionConfig extends LightningElement {
         this.isLoading = true;
         this.settings = { ...this.settings, historyLog: event.target.checked };
 
-        console.log('state:' + JSON.stringify(this.settings));
-
         saveConfig({settings: this.settings})
             .then(result => {
-                console.log('Success');
                 this.isLoading = false;
             })
             .catch(error => {
-                console.log('Error saving config');
-                console.log(error);
+                console.error(error);
                 this.isLoading = false;
             });
     }

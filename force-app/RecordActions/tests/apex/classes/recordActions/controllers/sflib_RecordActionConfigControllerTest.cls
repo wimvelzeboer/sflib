@@ -40,13 +40,37 @@ private class sflib_RecordActionConfigControllerTest {
 
         // WHEN reading config
         System.Test.startTest();
-        sflib_RecordActionConfigController.RecordActionSettings result =
+        sflib_RecordActionSettings result =
                 sflib_RecordActionConfigController.getConfig();
         System.Test.stopTest();
 
         // THEN the default is false
         System.Assert.isNotNull(result);
         System.Assert.areEqual(false, result.historyLog);
+    }
+
+    @IsTest
+    static void testGetConfig_returnsFalseWhenSettingIsMissing_failing() {
+        // GIVEN no custom setting record exists
+
+        fflib_ApexMocks mocks = new fflib_ApexMocks();
+        sflib_RecordActionSettings settingsMock = (sflib_RecordActionSettings) mocks.mock(sflib_RecordActionSettings.class);
+
+        mocks.startStubbing();
+        mocks.when(settingsMock.get()).thenThrow(new DmlException());
+        mocks.stopStubbing();
+
+        sflib_RecordActionSettings.replaceWith(settingsMock);
+
+        // WHEN reading config
+        System.Test.startTest();
+        try {
+            sflib_RecordActionConfigController.getConfig();
+            System.Assert.fail('Expected an exception');
+        } catch (Exception e) {
+            System.Assert.areEqual('Script-thrown exception', e.getMessage());
+        }
+        System.Test.stopTest();
     }
 
     @IsTest
@@ -59,7 +83,7 @@ private class sflib_RecordActionConfigControllerTest {
 
         // WHEN reading config
         System.Test.startTest();
-        sflib_RecordActionConfigController.RecordActionSettings result =
+        sflib_RecordActionSettings result =
                 sflib_RecordActionConfigController.getConfig();
         System.Test.stopTest();
 
@@ -71,8 +95,8 @@ private class sflib_RecordActionConfigControllerTest {
     @IsTest
     static void testSaveConfig_insertsNewSetting() {
         // GIVEN a settings payload
-        sflib_RecordActionConfigController.RecordActionSettings input =
-                new sflib_RecordActionConfigController.RecordActionSettings();
+        sflib_RecordActionSettings input =
+                sflib_RecordActionSettings.newInstance();
         input.historyLog = true;
 
         // WHEN saving config
@@ -87,6 +111,29 @@ private class sflib_RecordActionConfigControllerTest {
     }
 
     @IsTest
+    static void testSaveConfig_insertsNewSetting_failing() {
+
+        fflib_ApexMocks mocks = new fflib_ApexMocks();
+        sflib_RecordActionSettings settingsMock = (sflib_RecordActionSettings) mocks.mock(sflib_RecordActionSettings.class);
+
+        mocks.startStubbing();
+        mocks.when(settingsMock.save()).thenThrow(new DmlException());
+        mocks.stopStubbing();
+
+        sflib_RecordActionSettings.replaceWith(settingsMock);
+
+        // WHEN saving config
+        System.Test.startTest();
+        try {
+            sflib_RecordActionConfigController.saveConfig(settingsMock);
+            System.Assert.fail('Expected an exception, but got none');
+        } catch (Exception e) {
+            System.Assert.areEqual('Script-thrown exception', e.getMessage());
+        }
+        System.Test.stopTest();
+    }
+
+    @IsTest
     static void testSaveConfig_updatesExistingSetting() {
         // GIVEN an existing org default custom setting record
         insert new sflib_RecordActionConfig__c(
@@ -94,8 +141,8 @@ private class sflib_RecordActionConfigControllerTest {
                 HistoryLog__c = false
         );
 
-        sflib_RecordActionConfigController.RecordActionSettings input =
-                new sflib_RecordActionConfigController.RecordActionSettings();
+        sflib_RecordActionSettings input =
+                sflib_RecordActionSettings.newInstance();
         input.historyLog = true;
 
         // WHEN saving config

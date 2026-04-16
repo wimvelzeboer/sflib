@@ -40,13 +40,15 @@
  * ></c-sflib-record-actions>
  */
 import {api, LightningElement, wire} from 'lwc';
-import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import {getRecord, getFieldValue} from 'lightning/uiRecordApi';
+import getSettings from '@salesforce/apex/sflib_RecordActionConfigController.getConfig';
+import logAction from '@salesforce/apex/sflib_RecordActionHistoryController.logAction';
+import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 
-import NAME_FIELD from '@salesforce/schema/sflib_RecordAction__c.Name';
 import DESCRIPTION_FIELD from '@salesforce/schema/sflib_RecordAction__c.Description__c';
-import ICON_FIELD from '@salesforce/schema/sflib_RecordAction__c.Icon__c';
 import FLOW_FIELD from '@salesforce/schema/sflib_RecordAction__c.FlowName__c';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import ICON_FIELD from '@salesforce/schema/sflib_RecordAction__c.Icon__c';
+import NAME_FIELD from '@salesforce/schema/sflib_RecordAction__c.Name';
 
 const FIELDS = [NAME_FIELD, DESCRIPTION_FIELD, ICON_FIELD, FLOW_FIELD];
 
@@ -79,22 +81,10 @@ export default class SflibRecordAction extends LightningElement {
     @api variant;
 
     /**
-     * The `sflib_RecordAction__c` record
-     * @type {sflib_RecordAction__c}
-     */
-    record= {};
-
-    /**
-     * Indicates whether the description is truncated and a button to expand is shown
+     * Indicates whether the description is collapsed
      * @type {boolean}
      */
-    showReadMore = false;
-
-    /**
-     * Indicates whether the modal is shown
-     * @type {boolean}
-     */
-    showModal = false;
+    collapsed = true;
 
     /**
      * Indicates whether the description is clamped
@@ -103,16 +93,58 @@ export default class SflibRecordAction extends LightningElement {
     isClamped = false;
 
     /**
-     * Indicates whether the description is collapsed
+     * The `sflib_RecordAction__c` record
+     * @type {sflib_RecordAction__c}
+     */
+    record = {};
+
+    /**
+     * Indicates whether the modal is shown
      * @type {boolean}
      */
-    collapsed = true;
+    showModal = false;
+
+    /**
+     * Indicates whether the description is truncated and a button to expand is shown
+     * @type {boolean}
+     */
+    showReadMore = false;
+
+    /**
+     * The Id of the sflib_RecordActionHistory__c record that is created when the action is executed.
+     * @type {string|null}
+     * @private
+     */
+    _actionLogId = null;
+
+    /**
+     * Holds the settings for the Record Actions feature
+     * @type {{historyLog: boolean}}
+     * @private
+     */
+    _settings = {
+        historyLog: false
+    };
+
+    /**
+     * Loads the actions settings
+     */
+    @wire(getSettings, {})
+    getWiredSettings({error, data}) {
+        if (error) {
+            console.error(error);
+        }
+        if (data) {
+            // reload actions whenever the record changes
+            this._settings = data;
+        }
+    }
 
     /**
      * Wires the record to the component
      */
-    @wire(getRecord, { recordId: '$actionId', fields: FIELDS })
-    wiredRecordAction({ error, data }) {
+    @wire(getRecord, {recordId: '$actionId', fields: FIELDS})
+    wiredRecordAction({error, data}) {
         if (data) {
             this.record = data;
         } else if (error) {
@@ -121,11 +153,22 @@ export default class SflibRecordAction extends LightningElement {
     }
 
     /**
-     * Returns the title of the action
-     * @returns {string|null}
+     * Adds a new sflib_RecordActionHistory__c record to the system.
+     * The record is created with the current user as the owner.
+     * @param status {'Started' | 'Completed' | 'Failed' | 'Cancelled'}
+     * @param callback {function} Optional callback function to be executed after the record is created.
      */
-    get title() {
-        return this.record ? getFieldValue(this.record, NAME_FIELD) : null;
+    addHistoryLog(status, callback = null) {
+        logAction({actionLogId: this._actionLogId, recordId: this.recordId, actionId: this.actionId, status: status})
+            .then(result => {
+                this._actionLogId = result;
+                if (callback !== null) {
+                    callback();
+                }
+            })
+            .catch(error => {
+                console.error('Error logging action: ' + error);
+            });
     }
 
     /**
@@ -150,7 +193,7 @@ export default class SflibRecordAction extends LightningElement {
      */
     get flowVariables() {
         return [
-            { name: 'recordId', type: 'String', value: this.recordId }
+            {name: 'recordId', type: 'String', value: this.recordId}
         ];
     }
 
@@ -172,6 +215,14 @@ export default class SflibRecordAction extends LightningElement {
     }
 
     /**
+     * Returns the title of the action
+     * @returns {string|null}
+     */
+    get title() {
+        return this.record ? getFieldValue(this.record, NAME_FIELD) : null;
+    }
+
+    /**
      * Handles the click event of the action
      */
     handleClick() {
@@ -182,9 +233,11 @@ export default class SflibRecordAction extends LightningElement {
         }
         this.showMessage('Info', 'info', 'Running flow: ' + flowName);
 
-        // todo - if history is enabled log start of execution
-
-        this.showModal = true;
+        if (this._settings.historyLog) {
+            this.addHistoryLog('Started', () => this.showModal = true);
+        } else {
+            this.showModal = true;
+        }
     }
 
     /**
@@ -200,20 +253,20 @@ export default class SflibRecordAction extends LightningElement {
      */
     handleFlowStatusChange(event) {
         // Handle flow status changes
-        console.log('Flow status change:', event.detail);
-        console.log('Flow status change:', event.detail.status);
         if (event.detail.status === 'FINISHED_SCREEN') {
             this.showMessage('Success', 'success', 'Flow finished successfully');
             this.showModal = false;
-            console.log('Flow finished successfully');
 
-            // publish event to tell parent the action was executed
-            const myEvent = new CustomEvent('changestatus', {
-                detail: { data: event.detail.status },
-            });
-            this.dispatchEvent(myEvent);
-
-        } else if (event.detail.status === 'ERROR'){
+            if (this._actionLogId !== undefined && this._actionLogId !== null) {
+                this.addHistoryLog('Completed',
+                    () => this.publishStatusChange(event.detail.status));
+            } else {
+                this.publishStatusChange(event.detail.status);
+            }
+        } else if (event.detail.status === 'ERROR') {
+            if (this._actionLogId !== undefined && this._actionLogId !== null) {
+                this.addHistoryLog('Failed');
+            }
             this.showError(event.detail.errors[0].message);
             this.showModal = false;
         }
@@ -239,6 +292,17 @@ export default class SflibRecordAction extends LightningElement {
             button.textContent = 'Read More';
             this.collapsed = true;
         }
+    }
+
+    /**
+     * Publishes the status change event to the parent component
+     * @param status
+     */
+    publishStatusChange(status) {
+        const myEvent = new CustomEvent('changestatus', {
+            detail: {data: status},
+        });
+        this.dispatchEvent(myEvent);
     }
 
     /**

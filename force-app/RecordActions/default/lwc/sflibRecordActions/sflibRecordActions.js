@@ -40,10 +40,15 @@
  */
 import {api, LightningElement, wire} from 'lwc';
 import getActions from '@salesforce/apex/sflib_RecordActionsController.getActions';
+import getSettings from '@salesforce/apex/sflib_RecordActionConfigController.getConfig';
 import {getRecord} from "lightning/uiRecordApi";
 import {RefreshEvent} from 'lightning/refresh';
+import hasAdminPermission from '@salesforce/customPermission/sflib_RecordActionAdmin';
+import historyModal from 'c/sflibRecordActionHistory';
+import {NavigationMixin} from 'lightning/navigation';
+import {ShowToastEvent} from "lightning/platformShowToastEvent";
 
-export default class SflibRecordActions extends LightningElement {
+export default class SflibRecordActions extends NavigationMixin(LightningElement) {
 
     /**
      * The Icon name used in the UI
@@ -125,16 +130,6 @@ export default class SflibRecordActions extends LightningElement {
         return this._variant;
     }
 
-    /**
-     * Returns the class name for the c-sflib-record-action component wrapper based on the variant
-     * @returns {string}
-     */
-    get className() {
-        return 'slds-col slds-m-bottom_small '
-            + (this._variant === 'list' ?
-                'slds-size_1-of-1' :
-                'slds-small-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3');
-    }
 
     /**
      * A list of `sflib_RecordAction.Id` values
@@ -148,6 +143,15 @@ export default class SflibRecordActions extends LightningElement {
      * @private
      */
     _iconName = 'custom:custom9';
+
+    /**
+     * Holds the settings for the Record Actions feature
+     * @type {{historyLog: boolean}}
+     * @private
+     */
+    _settings = {
+        historyLog: false
+    };
 
     /**
      * The title used in the UI
@@ -167,7 +171,7 @@ export default class SflibRecordActions extends LightningElement {
      * Loads the actions when the component is done loading
      */
     @wire(getRecord, {recordId: "$recordId", fields: ['Id']})
-    caseRecord({error, data}) {
+    getWiredRecord({error, data}) {
         if (error) {
             console.error(error);
         }
@@ -178,11 +182,86 @@ export default class SflibRecordActions extends LightningElement {
     }
 
     /**
-     * Handles the change event from the child component
-     * @param event
+     * Loads the actions settings
      */
-    handleActionStatusChange(event) {
+    @wire(getSettings, {})
+    getWiredSettings({error, data}) {
+        if (error) {
+            console.error(error);
+        }
+        if (data) {
+            // reload actions whenever the record changes
+            this._settings = data;
+        }
+    }
+
+    /**
+     * Returns the class name for the c-sflib-record-action component wrapper based on the variant
+     * @returns {string}
+     */
+    get className() {
+        return 'slds-col slds-m-bottom_small '
+            + (this._variant === 'list' ?
+                'slds-size_1-of-1' :
+                'slds-small-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3');
+    }
+
+    /**
+     * Returns true if the history log is enabled
+     * @return {boolean}
+     */
+    get historyEnabled() {
+        return this._settings.historyLog;
+    }
+
+    /**
+     * Returns true if the user has the administrator permission for the Record Actions feature
+     * @return {boolean}
+     */
+    get isAdministrator() {
+        return hasAdminPermission;
+    }
+
+    /**
+     * Returns true if the menu needs to be displayed.
+     * It shows if the user has the administrator permission for the Record Actions feature
+     * or the history log is enabled
+     *
+     * @return {boolean}
+     */
+    get showMenu() {
+        return this._settings.historyLog || hasAdminPermission;
+    }
+
+    /**
+     * Handles the change event from the child component
+     */
+    handleActionStatusChange() {
         this.dispatchEvent(new RefreshEvent());
+    }
+
+    /**
+     * Handles the click event of the show history menu item
+     * @return {Promise<void>}
+     */
+    async handleShowHistory() {
+        await historyModal.open({
+            size: 'full',
+            heading: 'Record Action History',
+            recordId: this.recordId,
+        });
+    }
+
+    /**
+     * Handles the click event of the show settings menu item
+     */
+    handleShowSettings() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__navItemPage',
+            attributes: {
+                apiName: 'sflib_RecordActionConfig'
+            }
+        });
     }
 
     /**
@@ -194,7 +273,24 @@ export default class SflibRecordActions extends LightningElement {
                 this.actionIds = result;
             })
             .catch(error => {
-                console.log(error);
+                console.error(error);
+                this.showError('Error retrieving Record Actions: ' + error.body.message);
             });
+    }
+
+    /**
+     * Shows an error message
+     *
+     * @param message
+     */
+    showError(message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Error',
+                message: message,
+                variant: 'error',
+                mode: 'sticky'
+            })
+        );
     }
 }

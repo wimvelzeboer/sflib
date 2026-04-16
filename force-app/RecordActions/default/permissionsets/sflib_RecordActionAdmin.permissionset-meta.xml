@@ -9,9 +9,17 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>sflib_RecordActionHistoryController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>sflib_RecordActionsController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>sflib_RecordActionAdmin</name>
+    </customPermissions>
     <customSettingAccesses>
         <enabled>true</enabled>
         <name>sflib_RecordActionConfig__c</name>

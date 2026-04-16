@@ -1,7 +1,7 @@
 /**
- * sflib_RecordActionConfigController
+ * sflib_RecordActionHistorySelectorTest selector test class
  *
- * Controller for the LWC sflibRecordAction Custom Settings
+ * This class is testing the selector sflib_RecordActionHistorySelector and all its methods.
  *
   * @author architect ir. Wilhelmus G.J. Velzeboer
  *
@@ -29,29 +29,21 @@
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @see sflib_RecordActions
+ * @see sflib_RecordActionHistorySelector
  */
-public with sharing class sflib_RecordActionConfigController {
+@IsTest(IsParallel=true)
+private class sflib_RecordActionHistorySelectorTest
+{
+	@IsTest
+	static void testBehavior()
+	{
+		sflib_RecordActionHistorySelector.replaceWith(sflib_IRecordActionHistorySelector.class);
+		sflib_RecordActionHistorySelector.replaceWith(new sflib_RecordActionHistorySelector());
+		sflib_RecordActionHistorySelector.newInstance();
+		sflib_IRecordActionHistorySelector selector = sflib_RecordActionHistorySelector.newElevatedInstance();
 
-    @AuraEnabled(Cacheable=true)
-    public static sflib_RecordActionSettings getConfig() {
-        try {
-            return sflib_RecordActionSettings.newInstance().get();
-        } catch (Exception e) {
-            AuraHandledException auraHandledException = new AuraHandledException(e.getMessage());
-            auraHandledException.setMessage(e.getMessage());
-            throw auraHandledException;
-        }
-    }
-
-    @AuraEnabled
-    public static void saveConfig(sflib_RecordActionSettings settings) {
-        try {
-            settings.save();
-        } catch (Exception e) {
-            AuraHandledException auraHandledException = new AuraHandledException(e.getMessage());
-            auraHandledException.setMessage(e.getMessage());
-            throw auraHandledException;
-        }
-    }
+		selector.selectById(new Set<Id>());
+		selector.selectSObjectsById(new Set<Id>());
+		selector.selectByRecordId(new Set<Id>());
+	}
 }
