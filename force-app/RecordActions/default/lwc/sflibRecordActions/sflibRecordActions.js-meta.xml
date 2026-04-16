@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <description>Displays Dynamic Record Actions, offered by SFLib</description>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property name="title" type="String" default="The displayed title" label="Enter the title"/>
+            <property name="iconName" type="String" default="The name of the icon next to the title" label="Icon Name"/>
+            <property name="variant" type="String" default="The displayed variant, either 'list' or 'tiles'" label="Variant"/>
+        </targetConfig>
+    </targetConfigs>
+    <masterLabel>SFLib Record Actions</masterLabel>
+</LightningComponentBundle>

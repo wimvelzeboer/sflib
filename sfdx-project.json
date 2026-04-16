@@ -9,7 +9,10 @@
       "versionDescription": "A Library of reusable Salesforce components",
       "dependencies": [
         {
-          "package": "fflibApexExtensions@0.8.0-1"
+          "package": "fflibApexExtensions@0.9.0-1"
+        },
+        {
+          "package": "NebulaLogger-Core@4.17.4"
         }
       ]
     }
@@ -20,7 +23,11 @@
   "sourceApiVersion": "66.0",
   "packageAliases": {
     "fflibApexExtensions": "0HoJ8000000KyjfKAC",
-    "fflibApexExtensions@0.8.0-1": "04tJ8000000kaL4IAI",
-    "sflib": "0HoJ8000000KyjkKAC"
+    "fflibApexExtensions@0.9.0-1": "04tJ8000000kaPHIAY",
+    "NebulaLogger-Core@4.17.4": "04tg70000004jmXAAQ",
+    "sflib": "0HoJ8000000KyjkKAC",
+    "sflib@0.1.0-2-feature/RecordActions": "04tJ8000000kaPRIAY",
+    "sflib@0.1.0-3-feature/RecordActions": "04tJ8000000kaPWIAY",
+    "sflib@0.1.0-4-feature/RecordActions": "04tJ8000000kaPbIAI"
   }
 }
