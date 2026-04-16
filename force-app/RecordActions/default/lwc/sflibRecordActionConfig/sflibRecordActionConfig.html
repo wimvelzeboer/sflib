@@ -1,0 +1,19 @@
+<!-- Sflib Record Action Config -->
+<template>
+    <lightning-card title="Record Action Settings" icon-name="custom:custom67">
+        <div class="slds-p-around_medium">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+            </template>
+
+            <lightning-input
+                    type="toggle"
+                    label="Enable History Log"
+                    name="historyLog"
+                    checked={historyLog}
+                    onchange={handleHistoryLogChange}>
+            </lightning-input>
+
+        </div>
+    </lightning-card>
+</template>

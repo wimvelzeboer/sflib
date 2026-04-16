@@ -4,6 +4,18 @@
         <application>sflib_RecordActionsSetup</application>
         <visible>true</visible>
     </applicationVisibilities>
+    <classAccesses>
+        <apexClass>sflib_RecordActionConfigController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>sflib_RecordActionsController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <customSettingAccesses>
+        <enabled>true</enabled>
+        <name>sflib_RecordActionConfig__c</name>
+    </customSettingAccesses>
     <description>An administrator is able to manage and execute record actions and view the history log</description>
     <fieldPermissions>
         <editable>true</editable>
@@ -57,6 +69,10 @@
         <viewAllFields>true</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
+    <tabSettings>
+        <tab>sflib_RecordActionConfig</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
     <tabSettings>
         <tab>sflib_RecordAction__c</tab>
         <visibility>Visible</visibility>

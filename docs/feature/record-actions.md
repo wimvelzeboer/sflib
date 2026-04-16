@@ -59,28 +59,25 @@ A list of actions that meet the configured criteria.
 ## Configurational options
 Record actions can be configured to in the `Record Actions Setup` App.
 
-App description: Holds the record actions, offered by the SFLib Record Action feature
+This app holds the record actions, offered by the SFLib Record Action feature and the record action settings.
 Tabs:
  - Record Actions, 
    - `sflib_RecordAction__c`
    - Icon: Lightning
  - Record Action Settings
-   - `sflib_RecordActionSetting__c`
-   - 
+   - LWC component that modified the custom setting `sflib_RecordActionSetting__c`
+   - Icon: Gear
 
+### Record Actions
+Showing actions based on a formula with conditions like
+    - `1 AND 2`
+    - 1: `Case.Status = 'New'`
+    - 2: `Case.Priority = 'High'`
 
-- Showing actions based on a formula with conditions like
-  - `1 AND 2`
-  - 1: `Case.Status = 'New'`
-  - 2: `Case.Priority = 'High'`
-- Ordering listed actions 
-- Maintaining a history log
-  - using ActionHistory__c records
-  - using the record's feed
-- Recording the start and completion of actions
-
-
-The call-to-action button starts a screen flow.
+### Settings
+- Enable history Log<br/> This stores all the actions that have been performed on a record.
+- Enable Record Action History<br/> This stores the history of the actions that have been performed on a record.
+- Enable Record Action<br/> This enables the Record Action feature.
 
 ## Database Schema
 ```mermaid
@@ -131,6 +128,8 @@ erDiagram
 | `ActionCondition__c.Operator`      | `Equals`, `Not Equals`, `Contains`            |
 | `ActionCondition__c.ObjectName__c` | `Case`, `Account`, `Contact`, `User`          |
 | `ActionHistory__c.Status`          | `Started`, `Completed`, `Cancelled`, `Failed` |
+
+
 
 ## LWC Components
 

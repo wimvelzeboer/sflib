@@ -14,6 +14,7 @@
     <label>Record Actions Setup</label>
     <navType>Standard</navType>
     <tabs>sflib_RecordAction__c</tabs>
+    <tabs>sflib_RecordActionConfig</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>Record_Actions_Setup_UtilityBar</utilityBar>
 </CustomApplication>
