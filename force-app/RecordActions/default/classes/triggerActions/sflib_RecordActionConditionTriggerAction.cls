@@ -1,7 +1,5 @@
 /**
- * sflib_IRecordActionConditionsSelector interface class
- *
- * Selector Interface Class providing common database query support for abstracting and encapsulating query logic
+ * sflib_RecordActionConditionTriggerAction class
  *
   * @author architect ir. Wilhelmus G.J. Velzeboer
  *
@@ -29,29 +27,47 @@
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @see fflib_ISObjectSelector
- * @see sflib_RecordActionConditionsSelector
+ * @see fflib_TriggerAction
+ * @see sflib_RecordActionConditionTrigger
  */
-public interface sflib_IRecordActionConditionsSelector
-		extends fflib_ISObjectSelector
-{
-	/**
-	 * Queries `sflib_RecordActionCondition__c` records by their record Id
-	 *
-	 * @param idSet A set of `sflib_RecordActionCondition__c.Id` values
-	 *
-	 * @return A list of `sflib_RecordActionCondition__c` records
-	 */
-	List<sflib_RecordActionCondition__c> selectById(Set<Id> idSet);
+public with sharing class sflib_RecordActionConditionTriggerAction extends fflib_TriggerAction {
 
-	/**
-	 * Queries `sflib_RecordActionCondition__c` records by their related record action Id
-	 *
-	 * @param recordActionIds A set of `sflib_RecordActionCondition__c.RecordAction__c` values
-	 *
-	 * @return A list of `sflib_RecordActionCondition__c` records
-	 */
-    List<sflib_RecordActionCondition__c> selectByRecordActionId(Set<Id> recordActionIds);
+    public override void onAfterInsert() {
+        validate();
+    }
 
-	fflib_SObjectSelector setDataAccess(fflib_SObjectSelector.DataAccess access);
+    public override void onAfterUnDelete() {
+        validate();
+    }
+
+    public override void onAfterUpdate() {
+        validate();
+    }
+
+    public override void onAfterDelete() {
+        validateDeleted();
+    }
+
+    /**
+     * Checks if the condition number is unique for the linked `sflib_RecordAction__c`
+     * and that all numbers referenced in the linked record action formula are present
+     * if not, an DML error is added to the record
+     *
+     * @return Returns the record Id and TRUE for valid records
+     */
+    @TestVisible
+    private Map<Id, Boolean> validate()
+    {
+        return sflib_RecordActionsService.validate((List<sflib_RecordActionCondition__c>) triggerContext.getRecords());
+    }
+
+    private void validateDeleted() {
+        Map<Id, Boolean> report = validate();
+        for (sflib_RecordActionCondition__c record : (List<sflib_RecordActionCondition__c>) triggerContext.getRecords()) {
+            if ((report.containsKey(record.Id) && report.get(record.Id) == false)
+                || (report.containsKey(record.RecordAction__c) && report.get(record.RecordAction__c) == false)) {
+                record.addError('Unable to delete condition, is it still referenced in the Record Action formula?');
+            }
+        }
+    }
 }

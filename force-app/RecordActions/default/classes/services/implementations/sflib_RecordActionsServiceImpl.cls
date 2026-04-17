@@ -62,6 +62,178 @@ public inherited sharing class sflib_RecordActionsServiceImpl implements sflib_I
 	}
 
 	/**
+	 * Validates the given record action conditions and their related record action,
+	 * a record DML error is added with a message if a problem is found.
+	 * Note: The provided records must have a record Id value
+	 *
+	 * @param records A list of `sflib_RecordActionCondition__c` records to validate
+	 *
+	 * @return Returns a map of `sflib_RecordActionCondition__c.Id` value and if no errors found a TRUE boolean
+	 */
+	public Map<Id, Boolean> validate(List<sflib_RecordActionCondition__c> records) {
+
+		// Validate the formula
+		sflib_IRecordActionConditions conditions = sflib_RecordActionConditions.newInstance(records);
+		conditions.validateFormula();
+
+		// Check for duplicate numbers for active Record Actions
+		sflib_IRecordActions actions = sflib_RecordActions.newInstance(conditions.getRecordActionIds());
+		sflib_IRecordActions activeActions = actions.selectByStatus('Active');
+		sflib_IRecordActionConditions allConditions = getAllConditions(newConditions.getRecordActionIds());
+		conditions.selectById(
+				allConditions.selectByRecordActionId(activeActions.getRecordIds())
+						.selectByDuplicateNumbers()
+						.getRecordIds()
+		)
+				.addError(sflib_RecordActionCondition__c.Number__c, 'Active Record Action cannot have duplicates in condition numbers');
+
+		// Check for missing numbers in active Record Actions
+
+
+		// Fetch all conditions for the related record actions
+		sflib_IRecordActionConditions allConditions = existing.add(newConditions);
+
+		Map<Id, Boolean> result = new Map<Id, Boolean>();
+		for (sflib_RecordAction__c action : actions.getRecordActions()) {
+			sflib_IRecordActionConditions conditions = allConditions.selectByRecordActionId(new Set<Id>{
+					action.Id
+			});
+
+
+			result.put(action.Id, false);
+			if (isActive(action)) {
+				if (hasMissingNumbers(action, conditions)) {
+					action.addError(
+							sflib_RecordAction__c.Formula__c,
+							'Not all referenced numbers have a Record Action Condition');
+					action.addError(
+							sflib_RecordAction__c.Status__c,
+							'Active actions require a valid formula');
+				} else if (hasDuplicateNumbers(action, conditions, result)) {
+					action.addError(
+							sflib_RecordAction__c.Status__c,
+							'Active actions require unique numbers for their related conditions');
+
+				}
+			} else if (isActiveWithFailingConditionFormulas(action, conditions, result)) {
+				action.addError(
+						sflib_RecordAction__c.Status__c,
+						'Active actions require a valid formulas in their related conditions');
+			} else {
+				result.put(action.Id, true);
+			}
+		}
+		return result;
+
+
+		return validate(recordActions, allConditions);
+	}
+
+	/**
+	 * Validates the given record action and their related record action conditions,
+	 * a record DML error is added with a message if a problem is found
+	 * Note: The provided records must have a record Id value
+	 *
+	 * @param records A list of `sflib_RecordAction__c` records to validate
+	 *
+	 * @return Returns a map of `sflib_RecordAction__c.Id` value and if no errors found a TRUE boolean
+	 */
+	public Map<Id, Boolean> validate(List<sflib_RecordAction__c> records) {
+		sflib_IRecordActions recordActions = sflib_RecordActions.newInstance(records);
+		sflib_IRecordActionConditions conditions = getAllConditions(recordActions.getRecordIds());
+		return validate(recordActions, conditions);
+	}
+
+	private static sflib_IRecordActionConditions getAllConditions(Set<Id> recordActionIds) {
+		sflib_IRecordActionConditions existing = sflib_RecordActionConditions.newInstance(
+				sflib_RecordActionConditionsSelector.newElevatedInstance()
+						.selectByRecordActionId(recordActionIds)
+		);
+		return existing;
+	}
+
+	private static Map<Id, Boolean> validate(sflib_IRecordActions actions, sflib_IRecordActionConditions actionConditions) {
+		Map<Id, Boolean> result = new Map<Id, Boolean>();
+		for (sflib_RecordAction__c action : actions.getRecordActions()) {
+			sflib_IRecordActionConditions conditions = actionConditions.selectByRecordActionId(new Set<Id>{
+					action.Id
+			});
+
+			result.put(action.Id, false);
+			if (isActive(action)) {
+				if (conditions.isEmpty()) {
+					action.addError(
+							sflib_RecordAction__c.Status__c,
+							'A Record Action requires conditions before it can be active', true);
+				} else if (hasMissingNumbers(action, conditions)) {
+					action.addError(
+							sflib_RecordAction__c.Formula__c,
+							'Not all referenced numbers have a Record Action Condition');
+					action.addError(
+							sflib_RecordAction__c.Status__c,
+							'Active actions require a valid formula');
+				} else if (hasDuplicateNumbers(action, conditions, result)) {
+					action.addError(
+							sflib_RecordAction__c.Status__c,
+							'Active actions require unique numbers for their related conditions');
+
+				}
+			} else if (isActiveWithFailingConditionFormulas(action, conditions, result)) {
+				action.addError(
+						sflib_RecordAction__c.Status__c,
+						'Active actions require a valid formulas in their related conditions');
+			} else {
+				result.put(action.Id, true);
+			}
+		}
+		return result;
+	}
+
+	private static Boolean isActive(sflib_RecordAction__c action) {
+		return action.Status__c == 'Active';
+	}
+
+	private static Boolean hasDuplicateNumbers(
+			sflib_RecordAction__c action,
+			sflib_IRecordActionConditions conditions,
+			Map<Id, Boolean> report) {
+		List<Integer> numbers = conditions.getNumberList();
+		Set<Integer> duplicates = new Set<Integer>();
+		while (numbers.isEmpty() == false) {
+			Integer aNumber = numbers.remove(0);
+			if (numbers.contains(aNumber)) duplicates.add(aNumber);
+		}
+		if (duplicates.isEmpty()) return false;
+
+		action.addError('Active Record Actions cannot have duplicate condition numbers: ' + String.join(duplicates, ', '));
+		for (sflib_RecordActionCondition__c record : conditions.getRecordActionConditions()) {
+			if (duplicates.contains(Integer.valueOf(record.Number__c))) {
+				report.put(record.Id, false);
+				record.addError(sflib_RecordActionCondition__c.Number__c, 'Duplicate numbers are not allowed on active Record Actions');
+			} else {
+				report.put(record.Id, true);
+			}
+		}
+		return true;
+	}
+
+
+	private static Boolean hasMissingNumbers(sflib_RecordAction__c action, sflib_IRecordActionConditions conditions) {
+		return conditions.getNumbers().containsAll(getNumbers(action.Formula__c)) == false;
+	}
+
+	private static Set<Integer> getNumbers(String formula) {
+		Matcher matcher = Pattern.compile('\\d++').matcher(formula);
+
+		Set<Integer> result = new Set<Integer>();
+		while (matcher.find()) {
+			result.add(Integer.valueOf(matcher.group()));
+		}
+		return result;
+	}
+
+
+	/**
 	 * Queries the records for each SObjectType with the fields referenced ins the formula instances
 	 *
 	 * @param idsBySObjectName

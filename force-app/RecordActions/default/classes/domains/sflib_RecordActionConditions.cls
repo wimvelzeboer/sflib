@@ -114,6 +114,28 @@ public virtual inherited sharing class sflib_RecordActionConditions extends ffli
 	}
 
 	/**
+	 * Adds the given records to the existing domain, if records are already present then they are replaced
+	 *
+	 * @param toAdd The conditions to be added.
+	 *
+	 * @return Returns a new instance of the domain with the added records
+	 */
+	public sflib_IRecordActionConditions add(sflib_IRecordActionConditions toAdd) {
+
+		Map<Id, sflib_RecordActionCondition__c> newById = toAdd.getById();
+		Map<Id, sflib_RecordActionCondition__c> existingById = this.getById();
+		List<sflib_RecordActionCondition__c> results = new List<sflib_RecordActionCondition__c>();
+		for (Id conditionId : existingById.keySet()) {
+			if (newById.containsKey(conditionId)) {
+				results.add(newById.get(conditionId));
+			} else {
+				results.add(existingById.get(conditionId));
+			}
+		}
+		return new sflib_RecordActionConditions(results);
+	}
+
+	/**
 	 * Get the `sflib_RecordActionCondition__c` records the domain contains
 	 *
 	 * @return Returns the list of `sflib_RecordActionCondition__c` records
@@ -149,6 +171,80 @@ public virtual inherited sharing class sflib_RecordActionConditions extends ffli
 	}
 
 	/**
+	 * Get a list of all the condition numbers, which may contain duplicates
+	 *
+	 * @return Returns a list of `sflib_RecordActionCondition__c.Number__c` values
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * List<Integer> numbers =
+	 *         sflib_RecordActionConditions.newInstance(recordIds)
+	 *                 .getNumberList();
+	 */
+	public List<Integer> getNumberList() {
+		return getIntegerFieldValues(sflib_RecordActionCondition__c.Number__c).getIntegers();
+	}
+
+	/**
+	 * Get the condition numbers
+	 *
+	 * @return Returns a set of `sflib_RecordActionCondition__c.Number__c` values
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * Set<Integer> numbers =
+	 *         sflib_RecordActionConditions.newInstance(recordIds)
+	 *                 .getNumbers();
+	 */
+	public Set<Integer> getNumbers() {
+		return getIntegerFieldValues(sflib_RecordActionCondition__c.Number__c).getIntegerSet();
+	}
+
+	/**
+	 * Get the condition numbers by their related record action Id
+	 *
+	 * @return Returns a map of the `sflib_RecordActionCondition__c.Number__c` values by the `sflib_RecordActionCondition__c.RecordAction__c` value
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * Map<Id, List<Integer>> numbersByRecordActionId =
+	 *         sflib_RecordActionConditions.newInstance(recordIds)
+	 *                 .getNumbersByRecordActionId();
+	 */
+	public Map<Id, List<Integer>> getNumbersByRecordActionId() {
+		Map<Id, List<Integer>> result = new Map<Id, List<Integer>>();
+		for (sflib_RecordActionCondition__c record : getRecordActionConditions()) {
+			if (record.Number__c == null) continue;
+
+			if (result.containsKey(record.RecordAction__c) == false) {
+				result.put(record.RecordAction__c, new List<Integer>());
+			}
+
+			result.get(record.RecordAction__c).add(record.Number__c.intValue());
+		}
+		return result;
+	}
+
+	/**
+	 * Gets the related Record Action Id values from the records in the domain
+	 *
+	 * @return Returns a set of `RecordAction__c` values
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * Set<Id> recordActionIds =
+	 *         RecordActionConditions.newInstance(recordIds)
+	 *                 .getRecordActionIds();
+	 */
+	public Set<Id> getRecordActionIds() {
+		return getIdFieldValues(Schema.sflib_RecordActionCondition__c.RecordAction__c, true);
+	}
+
+	/**
 	 * Gets a sub-selection of the `sflib_RecordActionCondition__c` records matching the given ids
 	 *
 	 * @param ids A set of `sflib_RecordActionCondition__c.Id` values
@@ -162,6 +258,53 @@ public virtual inherited sharing class sflib_RecordActionConditions extends ffli
 	public sflib_IRecordActionConditions selectById(Set<Id> ids)
 	{
 		return new sflib_RecordActionConditions(getRecords(ids));
+	}
+
+	/**
+	 * Gets a sub-selection of the `sflib_RecordActionCondition__c` records matching the given record action ids
+	 *
+	 * @param recordActionIds A set of `sflib_RecordActionCondition__c.RecordAction__c` values
+	 *
+	 * @return Returns a new instance of the sflib_RecordActionConditions domain containing the matching records
+	 *
+	 * @example sflib_IRecordActionConditions subset = recordActionConditions.selectByRecordActionId(recordIds);
+	 */
+	public sflib_IRecordActionConditions selectByRecordActionId(Set<Id> recordActionIds) {
+		return new sflib_RecordActionConditions(getRecords(
+				Schema.sflib_RecordActionCondition__c.RecordAction__c,
+				recordActionIds));
+	}
+
+	/**
+	 * Validates is the formula compiles, if not a DML error is added to the record
+	 *
+	 * @return Returns an instance of itself to allow for method chaining
+	 */
+	public sflib_IRecordActionConditions validateFormula() {
+		for (sflib_RecordActionCondition__c record : this.getRecordActionConditions()) {
+			// Validate Type
+			Type sObjectTypeClass = System.Type.forName(record.SObjectType__c);
+			if (sObjectTypeClass == null) {
+				record.addError(
+						sflib_RecordActionCondition__c.SObjectType__c,
+						'Please provide a valid Object');
+				continue;
+			}
+
+			// Validate Formula
+			try {
+				Formula.builder()
+						.withType(sObjectTypeClass)
+						.withReturnType(FormulaEval.FormulaReturnType.BOOLEAN)
+						.withFormula(record.Formula__c)
+						.build();
+			} catch (Exception e) {
+				record.addError(
+						sflib_RecordActionCondition__c.Formula__c,
+						'Invalid formula: ' + e.getMessage());
+			}
+		}
+		return this;
 	}
 
 	/**

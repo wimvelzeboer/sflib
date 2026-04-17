@@ -65,6 +65,31 @@ public with sharing class sflib_RecordActionsService
 		return newInstance().getActions(idSet);
 	}
 
+	/**
+	 * Validates the given record action conditions and their related record action,
+	 * a record DML error is added with a message if a problem is found
+	 *
+	 * @param records A list of `sflib_RecordActionCondition__c` records to validate
+	 *
+	 * @return Returns a map of `sflib_RecordActionCondition__c.Id` value and if no errors found a TRUE boolean
+	 */
+	public static Map<Id, Boolean> validate(List<sflib_RecordActionCondition__c> records)
+	{
+		return newInstance().validate(records);
+	}
+
+	/**
+	 * Validates the given record action and their related record action conditions,
+	 * a record DML error is added with a message if a problem is found
+	 *
+	 * @param records A list of `sflib_RecordAction__c` records to validate
+	 *
+	 * @return Returns a map of `sflib_RecordAction__c.Id` value and if no errors found a TRUE boolean
+	 */
+	public static Map<Id, Boolean> validate(List<sflib_RecordAction__c> records)
+	{
+		return newInstance().validate(records);
+	}
 
 	/**
 	 * Replace the default implementation of the service

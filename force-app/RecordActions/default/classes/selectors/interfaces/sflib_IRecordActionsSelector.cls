@@ -4,8 +4,7 @@
  * Selector Class providing common database query support for abstracting and encapsulating query logic
  */
 public interface sflib_IRecordActionsSelector
-		extends fflib_ISObjectSelector
-{
+		extends fflib_ISObjectSelector {
 	/**
 	 * Queries sflib_RecordAction__c records by their record Id
 	 *

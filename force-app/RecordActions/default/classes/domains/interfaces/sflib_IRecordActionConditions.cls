@@ -33,10 +33,20 @@
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  * @see sflib_RecordActionConditions
  */
 public interface sflib_IRecordActionConditions extends fflib_ISObjects2
 {
+	/**
+	 * Adds the given records to the existing domain, if records are already present then they are replaced
+	 *
+	 * @param conditions The conditions to be added.
+	 *
+	 * @return Returns a new instance of the domain with the added records
+	 */
+	sflib_IRecordActionConditions add(sflib_IRecordActionConditions conditions);
+
 	/**
 	 * Get the `sflib_RecordActionCondition__c` records the domain contains
 	 *
@@ -67,6 +77,61 @@ public interface sflib_IRecordActionConditions extends fflib_ISObjects2
 	Map<Id, sflib_RecordActionCondition__c> getById();
 
 	/**
+	 * Get a list of all the condition numbers
+	 *
+	 * @return Returns a list of `sflib_RecordActionCondition__c.Number__c` values
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * List<Integer> numbers =
+	 *         sflib_RecordActionConditions.newInstance(recordIds)
+	 *                 .getNumberList();
+	 */
+	List<Integer> getNumberList();
+
+	/**
+	 * Get the condition numbers
+	 *
+	 * @return Returns a set of `sflib_RecordActionCondition__c.Number__c` values
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * Set<Integer> numbers =
+	 *         sflib_RecordActionConditions.newInstance(recordIds)
+	 *                 .getNumbers();
+	 */
+	Set<Integer> getNumbers();
+	/**
+	 * Get the condition numbers by their related record action Id
+	 *
+	 * @return Returns a map of the `sflib_RecordActionCondition__c.Number__c` values by the `sflib_RecordActionCondition__c.RecordAction__c` value
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * Map<Id, List<Integer>> numbersByRecordActionId =
+	 *         sflib_RecordActionConditions.newInstance(recordIds)
+	 *                 .getNumbersByRecordActionId();
+	 */
+	Map<Id, List<Integer>> getNumbersByRecordActionId();
+
+	/**
+	 * Gets the related Record Action Id values from the records in the domain
+	 *
+	 * @return Returns a set of `RecordAction__c` values
+	 *
+	 * @see sflib_RecordActionCondition__c
+	 *
+	 * @example
+	 * Set<Id> recordActionIds =
+	 *         RecordActionConditions.newInstance(recordIds)
+	 *                 .getRecordActionIds();
+	 */
+	Set<Id> getRecordActionIds();
+
+	/**
 	 * Gets a sub-selection of the `sflib_RecordActionCondition__c` records matching the given ids
 	 *
 	 * @param ids A set of `sflib_RecordActionCondition__c.Id` values
@@ -76,4 +141,22 @@ public interface sflib_IRecordActionConditions extends fflib_ISObjects2
 	 * @example sflib_IRecordActionConditions subset = recordActionConditions.selectById(recordIds);
 	 */
 	sflib_IRecordActionConditions selectById(Set<Id> ids);
+
+	/**
+	 * Gets a sub-selection of the `sflib_RecordActionCondition__c` records matching the given record action ids
+	 *
+	 * @param recordActionIds A set of `sflib_RecordActionCondition__c.RecordAction__c` values
+	 *
+	 * @return Returns a new instance of the sflib_RecordActionConditions domain containing the matching records
+	 *
+	 * @example sflib_IRecordActionConditions subset = recordActionConditions.selectByRecordActionId(recordIds);
+	 */
+	sflib_IRecordActionConditions selectByRecordActionId(Set<Id> recordActionIds);
+
+	/**
+	 * Validates is the formula compiles, if not a DML error is added to the record
+	 *
+	 * @return Returns an instance of itself to allow for method chaining
+	 */
+	sflib_IRecordActionConditions validateFormula();
 }
