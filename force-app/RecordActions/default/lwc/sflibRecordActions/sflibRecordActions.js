@@ -133,9 +133,12 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
 
     /**
      * A list of `sflib_RecordAction.Id` values
-     * @type {String[]}
+     * @type {{
+     *     actionId: string,
+     *     state: 'idle'|'running'|'completed'|'failed',
+     * }[]}
      */
-    actionIds = [];
+    actions = [];
 
     /**
      * The Icon name used in the UI
@@ -275,7 +278,7 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     loadActions() {
         getActions({idString: this.recordId})
             .then(result => {
-                this.actionIds = result;
+                this.actions = result;
             })
             .catch(error => {
                 console.error(error);

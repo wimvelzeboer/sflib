@@ -167,6 +167,24 @@ public virtual without sharing class sflib_RecordActionHistorySelector
 		);
 	}
 
+	/**
+	 * Queries sflib_RecordActionHistory__c records by their record Id field
+	 *
+	 * @param recordIds A set of `sflib_RecordActionHistory__c.RecordId__c` values
+	 * @param recordActionIds A set of `sflib_RecordActionHistory__c.RecordAction__c` values
+	 *
+	 * @return A list of `sflib_RecordActionHistory__c` records
+	 */
+	public List<sflib_RecordActionHistory__c> selectByRecordIdAndActionId(Set<Id> recordIds, Set<Id> recordActionIds) {
+		return Database.query(
+				newQueryFactory()
+						.selectField('CreatedBy.Name')
+						.selectField('RecordAction__r.Name')
+						.setCondition('RecordId__c IN :recordIds AND RecordAction__c IN :recordActionIds')
+						.toSOQL()
+		);
+	}
+
 	public override String getOrderBy() {
 		return 'CreatedDate ASC';
 	}

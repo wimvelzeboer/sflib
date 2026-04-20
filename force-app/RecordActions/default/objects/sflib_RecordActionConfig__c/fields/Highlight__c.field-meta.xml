@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Highlight__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Highlights running and used actions, this is only available when history is enabled</description>
+    <inlineHelpText>Show running actions with a spinner and used action in a different color. Required history to be enabled</inlineHelpText>
+    <label>Highlight Running and Used Actions</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -31,6 +31,7 @@
  */
 public class sflib_RecordActionSettings {
 
+    @AuraEnabled public Boolean highlight { get; set; }
     @AuraEnabled public Boolean historyLog { get; set; }
     @AuraEnabled public Boolean militaryTime { get; set; }
 
@@ -68,6 +69,7 @@ public class sflib_RecordActionSettings {
      */
     public sflib_RecordActionSettings(sflib_RecordActionConfig__c config) {
         this.historyLog = config.HistoryLog__c ?? false;
+        this.highlight = this.historyLog ? config.Highlight__c ?? true : false;
         this.militaryTime = config.MilitaryTime__c ?? false;
     }
 
@@ -103,6 +105,7 @@ public class sflib_RecordActionSettings {
         if (setting == null) setting = new sflib_RecordActionConfig__c();
 
         setting.HistoryLog__c = this.historyLog ?? false;
+        setting.Highlight__c = setting.HistoryLog__c ? this.highlight ?? true : false;
         setting.MilitaryTime__c = this.militaryTime ?? false;
 
         upsert setting;

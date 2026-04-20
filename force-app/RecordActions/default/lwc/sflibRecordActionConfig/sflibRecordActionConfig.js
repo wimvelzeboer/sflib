@@ -46,8 +46,9 @@ export default class SflibRecordActionConfig extends LightningElement {
     /**
      * Object that hold all the setting values
      * @type {{
+     *      highlight:boolean,
      *      historyLog:boolean,
-     *      militaryTime:boolean
+     *      militaryTime:boolean,
      * }}
      */
     settings = {};
@@ -77,6 +78,14 @@ export default class SflibRecordActionConfig extends LightningElement {
     }
 
     /**
+     * Get the value of the highlight setting, default is false if the history log is disabled
+     * @return {boolean}
+     */
+    get highlight() {
+        return this.settings.historyLog ? this.settings.highlight : false;
+    }
+
+    /**
      * Get the value of the history log setting
      * @return {boolean}
      */
@@ -90,6 +99,26 @@ export default class SflibRecordActionConfig extends LightningElement {
      */
     get militaryTime() {
         return this.settings.militaryTime;
+    }
+
+    /**
+     * Highlighting is only available when the history log is enabled
+     * @return {boolean}
+     */
+    get disableHighlightOption() {
+        return !this.settings.historyLog;
+    }
+
+    /**
+     * Handles the change event for the highlight setting and updates the settings accordingly.
+     *
+     * @param {Event} event The event object containing the change details. It is expected to have a
+     *                      target property with a checked attribute indicating the new highlight state.
+     * @return {void} Does not return any value.
+     */
+    handleHighlightChange(event) {
+        this.settings = { ...this.settings, highlight: event.target.checked };
+        this.saveSettings();
     }
 
     /**

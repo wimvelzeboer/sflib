@@ -18,12 +18,21 @@
 
             <lightning-input
                     type="toggle"
-                    label="Use 24 hour"
+                    label="Use 24 hour clock"
                     message-toggle-active="24 Hour"
                     message-toggle-inactive="AM/PM"
                     name="militaryTime"
                     checked={militaryTime}
                     onchange={handleMilitaryTimeChange}>
+            </lightning-input>
+
+            <lightning-input
+                    type="toggle"
+                    label="Highlight active and used actions"
+                    name="highlight"
+                    checked={highlight}
+                    disabled={disableHighlightOption}
+                    onchange={handleHighlightChange}>
             </lightning-input>
 
         </div>

@@ -76,9 +76,27 @@ export default class SflibRecordAction extends LightningElement {
      * The variant of how the action is displayed
      * @type {'list'|'tiles'}
      * @public
-     * @required
+     * @default 'list'
      */
     @api variant;
+
+    /**
+     * The state of the action
+     * @type {'idle'|'running'|'failed'|'completed'}
+     * @public
+     * @default 'idle'
+     */
+    @api
+    set state(value) {
+        this._state = value;
+        if (this._state !== 'idle' && this._state !== 'running' && this._state !== 'failed' && this._state !== 'completed') {
+            console.log('Defaulting state to Idle, ' + this._state);
+            this._state = 'idle';
+        }
+    };
+    get state() {
+        return this._state;
+    };
 
     /**
      * Indicates whether the description is collapsed
@@ -127,6 +145,13 @@ export default class SflibRecordAction extends LightningElement {
     };
 
     /**
+     * The state of the action
+     * @type {'idle'|'running'|'failed'|'completed'}
+     * @private
+     */
+    _state = 'idle';
+
+    /**
      * Loads the actions settings
      */
     @wire(getSettings, {})
@@ -171,6 +196,30 @@ export default class SflibRecordAction extends LightningElement {
             });
     }
 
+    get buttonTitle() {
+        if (this.state === 'failed') {
+            return 'Retry - ' + this.title;
+        } else if (this.state === 'completed') {
+            return 'Rerun - ' + this.title;
+        } else if (this.state === 'running') {
+            return 'Restart -  ' + this.title + ' (running)';
+        } else {
+            return this.title;
+        }
+    }
+
+    get buttonVariant() {
+        if (this.state === 'failed') {
+            return 'destructive';
+        } else if (this.state === 'completed') {
+            return 'success';
+        } else if (this.state === 'running') {
+            return 'brand-outline';
+        } else {
+            return 'brand';
+        }
+    }
+
     /**
      * Returns the description of the action
      * @returns {string|null}
@@ -212,6 +261,18 @@ export default class SflibRecordAction extends LightningElement {
      */
     get showTiles() {
         return this.variant === 'tiles';
+    }
+
+    get startButtonTitle() {
+        if (this.state === 'failed') {
+            return 'Retry Action';
+        } else if (this.state === 'completed') {
+            return 'Rerun Action';
+        } else if (this.state === 'running') {
+            return 'Restart Action';
+        } else {
+            return 'Start Action';
+        }
     }
 
     /**

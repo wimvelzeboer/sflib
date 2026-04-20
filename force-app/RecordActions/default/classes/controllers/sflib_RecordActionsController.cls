@@ -41,7 +41,7 @@ public with sharing class sflib_RecordActionsController {
      * @return Returns the applicable `sflib_RecordAction__c.Id` values
      */
     @AuraEnabled(Cacheable=false)
-    public static List<String> getActions(String idString)  {
+    public static List<ActionData> getActions(String idString)  {
         try {
             final Id recordId = Id.valueOf(idString);
             final Set<Id> recordIds = new Set<Id>{recordId};
@@ -49,13 +49,96 @@ public with sharing class sflib_RecordActionsController {
             final Map<Id, sflib_IRecordActions> recordActionsById =
                     sflib_RecordActionsService.getActions(recordIds);
 
-            if (recordActionsById.containsKey(recordId) == false) return new List<String>(); // No actions
+            if (recordActionsById.containsKey(recordId) == false) return new List<ActionData>(); // No actions
 
-            return recordActionsById.get(recordId).getRecordIdList();
+            List<Id> actionIds = recordActionsById.get(recordId).getRecordIdList();
+
+            List<sflib_RecordActionHistory__c> history =
+                    sflib_RecordActionSettings.newInstance().highlight ?
+                            getHistory(recordId, actionIds) : new List<sflib_RecordActionHistory__c>();
+
+            return getResponse(actionIds, history);
         } catch (Exception e) {
             AuraHandledException auraHandledException = new AuraHandledException(e.getMessage());
             auraHandledException.setMessage(e.getMessage());
             throw auraHandledException;
         }
+    }
+
+    /**
+     * Fetch the record history for the provided record id and record action ids
+     *
+     * @param recordId
+     * @param actionIds
+     *
+     * @return Returns a list of related history record
+     */
+    private static List<sflib_RecordActionHistory__c> getHistory(Id recordId, List<Id> actionIds) {
+        return sflib_RecordActionHistorySelector.newElevatedInstance()
+                .selectByRecordIdAndActionId(
+                        new Set<Id>{recordId},
+                        new Set<Id>(actionIds)
+                );
+    }
+
+    /**
+     * Construct a response for the get request
+     * @param actionIds
+     * @param history
+     *
+     * @return Returns a list of ActionData DTOs
+     *
+     * @see sflib_RecordActionsController.ActionData
+     */
+    private static List<ActionData> getResponse(List<Id> actionIds, List<sflib_RecordActionHistory__c> history) {
+        Map<Id, sflib_RecordActionHistory__c> latestByActionId =
+                sflib_RecordActionHistories.newInstance(history)
+                        .getLatestByActionId();
+
+        List<ActionData> result = new List<ActionData>();
+        for (Id actionId : actionIds) {
+            if (latestByActionId.containsKey(actionId)) {
+                result.add(new ActionData(actionId, latestByActionId.get(actionId).Status__c));
+            } else {
+                result.add(new ActionData(actionId));
+            }
+        }
+        return result;
+    }
+
+
+    public class ActionData {
+        @AuraEnabled public Id actionId { get; set; }
+        @AuraEnabled public String state { get; set; }
+
+        public ActionData(Id actionId) {
+            this.actionId = actionId;
+            this.state = ActionState.IDLE.toString().toLowerCase();
+        }
+
+        public ActionData(Id actionId, String status) {
+            this.actionId = actionId;
+            switch on status {
+                when 'Started' {
+                    this.state = ActionState.RUNNING.toString().toLowerCase();
+                }
+                when 'Completed' {
+                    this.state = ActionState.COMPLETED.toString().toLowerCase();
+                }
+                when 'Failed' {
+                    this.state = ActionState.FAILED.toString().toLowerCase();
+                }
+                when else {
+                    this.state = ActionState.IDLE.toString().toLowerCase();
+                }
+            }
+        }
+    }
+
+    public enum ActionState {
+        IDLE,
+        RUNNING,
+        COMPLETED,
+        FAILED
     }
 }

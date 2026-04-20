@@ -63,13 +63,13 @@ private class sflib_RecordActionsControllerTest {
 
         // WHEN we want to list the record actions
         System.Test.startTest();
-        List<String> result = sflib_RecordActionsController.getActions(recordId);
+        List<sflib_RecordActionsController.ActionData> result = sflib_RecordActionsController.getActions(recordId);
         System.Test.stopTest();
 
         // THEN we get the list of actions
-        System.Assert.isTrue(result.contains(actionIdA));
-        System.Assert.isTrue(result.contains(actionIdB));
-        System.Assert.isTrue(result.contains(actionIdC));
+        System.Assert.areEqual(actionIdA, result.get(0).actionId);
+        System.Assert.areEqual(actionIdB, result.get(1).actionId);
+        System.Assert.areEqual(actionIdC, result.get(2).actionId);
     }
 
     @IsTest

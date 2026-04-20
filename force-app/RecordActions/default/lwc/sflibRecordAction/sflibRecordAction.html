@@ -25,9 +25,9 @@
             </div>
             <footer class="slds-card__footer">
                 <lightning-button
-                        variant="brand"
-                        label="Start Action"
-                        title="Start Action"
+                        variant={buttonVariant}
+                        label={startButtonTitle}
+                        title={startButtonTitle}
                         onclick={handleClick}
                         stretch="true"
                 ></lightning-button>
@@ -36,10 +36,10 @@
     </template>
     <template lwc:else>
         <lightning-button
-                variant="brand"
+                variant={buttonVariant}
                 icon-name={iconName}
-                label={title}
-                title={title}
+                label={buttonTitle}
+                title={buttonTitle}
                 onclick={handleClick}
                 stretch="true"
         ></lightning-button>

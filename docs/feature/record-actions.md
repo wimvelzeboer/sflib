@@ -11,6 +11,14 @@ The actions are displayed in a list or tiles view. It can contain an action menu
 ![tiles](./docs/feature/record-action_tile-view.png "Tiles View")
 
 
+__Contents__:
+- [Configurational options](#configurational-options)
+- [Database Schema](#database-schema)
+- [LWC Component](#lwc-components)
+- [Permissions](#permissions)
+- [Dependencies](#dependencies)
+- [Limitations](#limitations)
+
 ## Configurational options
 Record actions can be configured to in the `Record Actions Setup` App.
 
@@ -18,26 +26,23 @@ Record actions can be configured to in the `Record Actions Setup` App.
 
 This app holds the record actions, offered by the SFLib Record Action feature and the record action settings.
 Tabs:
- - Record Actions,<br/>Where actions can be configured 
- - Record Action Settings<br/>To manage Record Action settings
+ - [Record Actions](#manage-record-actions),<br/>Where actions can be configured 
+ - [Record Action Settings](#manage-record-action-settings)<br/>To manage Record Action settings
 
- 
+### Manage Record Actions
+
 ![Record Actions Setup Detail](./docs/feature/record-action_setup-detail.png "Record Actions Setup Detail")<br/>
 _Actions Detail page of the 'Record Actions Setup' Lightning App._
 
-![Record Actions Setup Settings](./docs/feature/record-action_setup-settings.png "Record Actions Setup Settings")<br/>
-_Configurable settings can be managed under the settings tab_
-
-### Record Actions
 Showing actions based on a formula with conditions like
     - `1 AND 2`
     - 1: `Case.Status = 'New'`
     - 2: `Case.Priority = 'High'`
 
-### Settings
-- Enable history Log<br/> This stores all the actions that have been performed on a record.
-- Enable Record Action History<br/> This stores the history of the actions that have been performed on a record.
-- Enable Record Action<br/> This enables the Record Action feature.
+### Manage Record Action Settings
+
+![Record Actions Setup Settings](./docs/feature/record-action_setup-settings.png "Record Actions Setup Settings")<br/>
+_Configurable settings can be managed under the settings tab_
 
 ## Database Schema
 ```mermaid
@@ -81,13 +86,13 @@ erDiagram
 | `sflib_RecordActionCondition__c` | The conditions for the actions |
 | `sflib_RecordActionHistory__c`   | The history of the actions     |
 
-| Field                              | Values                                        |
+| Field                              | Example Values                                |
 |------------------------------------|-----------------------------------------------|
 | `Action__c.Formula__c`             | `1 OR 2 AND 3`                                |
-| `Action__c.Status`                 | `Draft`, `Active`, `Disabled`                 |
-| `ActionCondition__c.Operator`      | `Equals`, `Not Equals`, `Contains`            |
+| `Action__c.Status__c`              | `Draft`, `Active`, `Disabled`                 |
+| `ActionCondition__c.Formula__c`    |                                               |
 | `ActionCondition__c.ObjectName__c` | `Case`, `Account`, `Contact`, `User`          |
-| `ActionHistory__c.Status`          | `Started`, `Completed`, `Cancelled`, `Failed` |
+| `ActionHistory__c.Status__c`       | `Started`, `Completed`, `Cancelled`, `Failed` |
 
 
 

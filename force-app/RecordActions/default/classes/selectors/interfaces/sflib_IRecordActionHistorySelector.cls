@@ -53,5 +53,15 @@ public interface sflib_IRecordActionHistorySelector
 	 */
 	List<sflib_RecordActionHistory__c> selectByRecordId(Set<Id> recordIds);
 
+	/**
+	 * Queries sflib_RecordActionHistory__c records by their record Id field
+	 *
+	 * @param recordIds A set of `sflib_RecordActionHistory__c.RecordId__c` values
+	 * @param recordActionIds A set of `sflib_RecordActionHistory__c.RecordAction__c` values
+	 *
+	 * @return A list of `sflib_RecordActionHistory__c` records
+	 */
+	List<sflib_RecordActionHistory__c> selectByRecordIdAndActionId(Set<Id> recordIds, Set<Id> recordActionIds);
+
 	fflib_SObjectSelector setDataAccess(fflib_SObjectSelector.DataAccess access);
 }
