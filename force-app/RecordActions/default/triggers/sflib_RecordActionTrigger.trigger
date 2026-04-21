@@ -1,7 +1,7 @@
 /**
- * sflib_RecordActionConditionTriggerAction class
+ * sflib_RecordActionTrigger Trigger
  *
-  * @author architect ir. Wilhelmus G.J. Velzeboer
+ * @author architect ir. Wilhelmus G.J. Velzeboer
  *
  * Copyright (c), W.G.J. Velzeboer,
  * All rights reserved.
@@ -27,37 +27,8 @@
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @see fflib_TriggerAction
- * @see sflib_RecordActionConditionTrigger
+ * @see sflib_RecordActionTriggerAction
  */
-public with sharing class sflib_RecordActionConditionTriggerAction extends fflib_TriggerAction {
-
-    public override void onAfterInsert() {
-        validate();
-    }
-
-    public override void onAfterUnDelete() {
-        validate();
-    }
-
-    public override void onAfterUpdate() {
-        validate();
-    }
-
-    public override void onAfterDelete() {
-        validate();
-    }
-
-    /**
-     * Checks if the condition number is unique for the linked `sflib_RecordAction__c`
-     * and that all numbers referenced in the linked record action formula are present
-     * if not, an DML error is added to the record
-     *
-     * @return Returns the record Id and TRUE for valid records
-     */
-    @TestVisible
-    private void validate()
-    {
-        sflib_RecordActionsService.validate((List<sflib_RecordActionCondition__c>) triggerContext.getRecords());
-    }
+trigger sflib_RecordActionTrigger on sflib_RecordAction__c (before insert, before update, after delete) {
+    new fflib_TriggerHandler().run();
 }

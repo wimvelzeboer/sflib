@@ -136,6 +136,21 @@ public virtual inherited sharing class sflib_RecordActionConditions extends ffli
 	}
 
 	/**
+	 * Adds a DML error message to each record in the domain
+	 *
+	 * @param sObjectField The SObjectField to which the error message should be linked
+	 * @param message The error message
+	 *
+	 * @return Returns an instance of itself to allow for method chaining
+	 */
+	public sflib_IRecordActionConditions addErrorMessage(SObjectField sObjectField, String message) {
+		for (SObject record : this.getRecords()) {
+			record.addError(sObjectField, message);
+		}
+		return this;
+	}
+
+	/**
 	 * Get the `sflib_RecordActionCondition__c` records the domain contains
 	 *
 	 * @return Returns the list of `sflib_RecordActionCondition__c` records
@@ -258,6 +273,37 @@ public virtual inherited sharing class sflib_RecordActionConditions extends ffli
 	public sflib_IRecordActionConditions selectById(Set<Id> ids)
 	{
 		return new sflib_RecordActionConditions(getRecords(ids));
+	}
+
+	/**
+	 * Gets the duplicate condition numbers for each record action
+	 *
+	 * @return Returns an instance of the domain containing only the records with duplicate numbers
+	 */
+	public sflib_IRecordActionConditions selectByDuplicateNumbers() {
+		Map<Id, List<sflib_RecordActionCondition__c>> recordsByRecordActionId = this.getByRecordActionId();
+		Set<Id> duplicates = new Set<Id>();
+		for (Id recordActionId : recordsByRecordActionId.keySet()) {
+			sflib_RecordActionConditions conditions =
+					new sflib_RecordActionConditions( recordsByRecordActionId.get(recordActionId));
+			if (conditions.getNumbers().size() == conditions.getNumberList().size()) continue; // There are no duplicates
+
+			Map<Integer, Id> idByNumber = new Map<Integer, Id>();
+			for (sflib_RecordActionCondition__c record : conditions.getRecordActionConditions()) {
+				Integer i = Integer.valueOf(record.Number__c);
+				if (idByNumber.containsKey(i)) {
+					duplicates.add(idByNumber.get(i));
+					duplicates.add(record.Id);
+				} else {
+					idByNumber.put(i, record.Id);
+				}
+			}
+		}
+		return this.selectById(duplicates);
+	}
+
+	public Map<Id, List<sflib_RecordActionCondition__c>> getByRecordActionId() {
+		return getSObjectsByIdField(Schema.sflib_RecordActionCondition__c.RecordAction__c);
 	}
 
 	/**

@@ -48,6 +48,16 @@ public interface sflib_IRecordActionConditions extends fflib_ISObjects2
 	sflib_IRecordActionConditions add(sflib_IRecordActionConditions conditions);
 
 	/**
+	 * Adds a DML error message to each record in the domain
+	 *
+	 * @param sObjectField The SObjectField to which the error message should be linked
+	 * @param message The error message
+	 *
+	 * @return Returns an instance of itself to allow for method chaining
+	 */
+	sflib_IRecordActionConditions addErrorMessage(SObjectField sObjectField, String message);
+
+	/**
 	 * Get the `sflib_RecordActionCondition__c` records the domain contains
 	 *
 	 * @return Returns the list of `sflib_RecordActionCondition__c` records
@@ -141,6 +151,13 @@ public interface sflib_IRecordActionConditions extends fflib_ISObjects2
 	 * @example sflib_IRecordActionConditions subset = recordActionConditions.selectById(recordIds);
 	 */
 	sflib_IRecordActionConditions selectById(Set<Id> ids);
+
+	/**
+	 * Gets the duplicate condition numbers for each record action
+	 *
+	 * @return Returns an instance of the domain containing only the records with duplicate numbers
+	 */
+	sflib_IRecordActionConditions selectByDuplicateNumbers();
 
 	/**
 	 * Gets a sub-selection of the `sflib_RecordActionCondition__c` records matching the given record action ids

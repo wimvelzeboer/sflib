@@ -42,8 +42,6 @@ public interface sflib_IRecordActionsService
 	 *
 	 * @return Returns A domain with record actions grouped in by the record id
 	 *
-	 * @throws sflib_RecordActionsService.ServiceException on errors
-	 *
 	 * @see sflib_RecordActions
 	 */
 	Map<Id, sflib_IRecordActions> getActions(Set<Id> idSet);
@@ -53,19 +51,15 @@ public interface sflib_IRecordActionsService
 	 * a record DML error is added with a message if a problem is found
 	 *
 	 * @param records A list of `sflib_RecordActionCondition__c` records to validate
-	 *
-	 * @return Returns a map of `sflib_RecordActionCondition__c.Id` value and if no errors found a TRUE boolean
 	 */
-	Map<Id, Boolean> validate(List<sflib_RecordActionCondition__c> records);
+	void validate(List<sflib_RecordActionCondition__c> records);
 
 	/**
 	 * Validates the given record action and their related record action conditions,
 	 * a record DML error is added with a message if a problem is found
 	 *
 	 * @param records A list of `sflib_RecordAction__c` records to validate
-	 *
-	 * @return Returns a map of `sflib_RecordAction__c.Id` value and if no errors found a TRUE boolean
 	 */
-	Map<Id, Boolean> validate(List<sflib_RecordAction__c> records);
+	void validate(List<sflib_RecordAction__c> records);
 }
  

@@ -28,36 +28,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @see fflib_TriggerAction
- * @see sflib_RecordActionConditionTrigger
+ * @see sflib_RecordActionTrigger
  */
-public with sharing class sflib_RecordActionConditionTriggerAction extends fflib_TriggerAction {
+public with sharing class sflib_RecordActionTriggerAction extends fflib_TriggerAction {
 
-    public override void onAfterInsert() {
-        validate();
+    public override void onBeforeInsert() {
+        sflib_IRecordActions actions = sflib_RecordActions.newInstance(triggerContext.getRecords());
+        onStatusActiveAddError(actions);
+    }
+
+    public override void onBeforeUpdate() {
+        sflib_RecordActionsService.validate((List<sflib_RecordAction__c>) triggerContext.getRecords());
     }
 
     public override void onAfterUnDelete() {
-        validate();
+        sflib_IRecordActions actions = sflib_RecordActions.newInstance(triggerContext.getRecords());
+        update actions.setStatus('Draft').getRecords();
     }
 
-    public override void onAfterUpdate() {
-        validate();
-    }
-
-    public override void onAfterDelete() {
-        validate();
-    }
-
-    /**
-     * Checks if the condition number is unique for the linked `sflib_RecordAction__c`
-     * and that all numbers referenced in the linked record action formula are present
-     * if not, an DML error is added to the record
-     *
-     * @return Returns the record Id and TRUE for valid records
-     */
-    @TestVisible
-    private void validate()
-    {
-        sflib_RecordActionsService.validate((List<sflib_RecordActionCondition__c>) triggerContext.getRecords());
+    private static void onStatusActiveAddError(sflib_IRecordActions actions) {
+        actions.selectByStatus('Active')
+                .addErrorMessage(Schema.sflib_RecordAction__c.Status__c, 'Active Record Actions required related conditions');
     }
 }

@@ -95,6 +95,7 @@ private class sflib_RecordActionConditionTATest {
     private static sflib_RecordActionCondition__c generateRecordActionCondition(Id recordActionId, Decimal conditionNumber) {
         return new sflib_RecordActionCondition__c(
                 Id = fflib_IDGenerator.generate(sflib_RecordActionCondition__c.SObjectType),
+                SObjectType__c = 'Account',
                 RecordAction__c = recordActionId,
                 Number__c = conditionNumber
         );

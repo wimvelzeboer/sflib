@@ -13,6 +13,16 @@
 public interface sflib_IRecordActions extends fflib_ISObjects2
 {
 	/**
+	 * Adds a DML error message to each record in the domain
+	 *
+	 * @param sObjectField The SObjectField to which the error message should be linked
+	 * @param message The error message
+	 *
+	 * @return Returns an instance of itself to allow for method chaining
+	 */
+	sflib_IRecordActions addErrorMessage(SObjectField sObjectField, String message);
+
+	/**
 	 * Get the `sflib_RecordAction__c` records the domain contains
 	 *
 	 * @return Returns the list of `sflib_RecordAction__c` records
@@ -49,6 +59,13 @@ public interface sflib_IRecordActions extends fflib_ISObjects2
 	Map<Id, sflib_RecordAction__c> getById();
 
 	/**
+	 * Get a set of referenced formula numbers by their record Id
+	 *
+	 * @return Returns the numbers referenced in the `Formula__c` field by their record Id
+	 */
+	Map<Id, Set<Integer>> getFormulaNumbersById();
+
+	/**
 	 * Gets a sub-selection of the `sflib_RecordAction__c` records matching the given ids
 	 *
 	 * @param ids A set of `sflib_RecordAction__c.Id` values
@@ -69,4 +86,24 @@ public interface sflib_IRecordActions extends fflib_ISObjects2
 	 * @example sflib_IRecordActions subset = recordActions.selectBySObjectType('Account');
 	 */
 	sflib_IRecordActions selectBySObjectType(String sObjectName);
+
+	/**
+	 * Gets a sub-selection of the `sflib_RecordAction__c` records matching the given Status value
+	 *
+	 * @param statusValue A `sflib_RecordAction__c.Status__c` value
+	 *
+	 * @return Returns a new instance of the sflib_RecordActions domain containing the matching records
+	 *
+	 * @example sflib_IRecordActions subset = recordActions.selectByStatus('Draft');
+	 */
+	sflib_IRecordActions selectByStatus(String statusValue);
+
+	/**
+	 * Sets a new value for the Status field
+	 *
+	 * @param statusValue The new value for the `Status__c` field
+	 *
+	 * @return Returns an instance of itself to allow for method chaining
+	 */
+	sflib_IRecordActions setStatus(String statusValue);
 }
