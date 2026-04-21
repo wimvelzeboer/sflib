@@ -3,6 +3,32 @@
  *
  * This class tests the implementation of sflib_RecordActionsServiceImpl
  *
+ * @author architect ir. Wilhelmus G.J. Velzeboer
+ *
+ * Copyright (c), W.G.J. Velzeboer,
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ *   are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above author notice,
+ *      this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ * - Neither the name of the author nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software without
+ *      specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  * @see sflib_RecordActionsServiceImpl
  */
 @IsTest
@@ -88,6 +114,62 @@ private class sflib_RecordActionsServiceImplTest
         System.Assert.areEqual(2, results.get(caseIdB).size(), 'Expected only one action for case B');
         System.Assert.areEqual(action3.Id, results.get(caseIdB).getRecords().get(0).Id, 'Incorrect first action assigned to case B');
         System.Assert.areEqual(action2.Id, results.get(caseIdB).getRecords().get(1).Id, 'Incorrect second action assigned to case B');
+    }
+
+    @IsTest
+    static void itShouldValidateConditions() {
+        sflib_RecordAction__c action = generateRecordAction('Test', Schema.Account.SObjectType, '1');
+        sflib_RecordActionCondition__c condition = generateRecordActionCondition(1, 'Name="Test"', action, Schema.Account.SObjectType);
+
+        fflib_ApexMocks mocks = new fflib_ApexMocks();
+        sflib_IRecordActionsSelector actionsSelectorMock = (sflib_IRecordActionsSelector) mocks.mock(sflib_IRecordActionsSelector.class);
+        sflib_IRecordActionConditionsSelector conditionsSelectorMock = (sflib_IRecordActionConditionsSelector) mocks.mock(sflib_IRecordActionConditionsSelector.class);
+
+        mocks.startStubbing();
+        mocks.when(actionsSelectorMock.selectById(new Set<Id>{action.Id}))
+                .thenReturn(new List<sflib_RecordAction__c> {action});
+        mocks.when(conditionsSelectorMock.selectByRecordActionId(new Set<Id>{action.Id}))
+                .thenReturn(new List<sflib_RecordActionCondition__c> {condition});
+        mocks.stopStubbing();
+
+        sflib_RecordActionsSelector.replaceWith(actionsSelectorMock);
+        sflib_RecordActionConditionsSelector.replaceWith(conditionsSelectorMock);
+
+        System.Test.startTest();
+        new sflib_RecordActionsServiceImpl().validate(new List<sflib_RecordAction__c>{action});
+        new sflib_RecordActionsServiceImpl().validate(new List<sflib_RecordActionCondition__c>{condition});
+        System.Test.stopTest();
+
+        System.Assert.isFalse(action.hasErrors(), 'Did not expect error for the Record Action');
+        System.Assert.isFalse(condition.hasErrors(), 'Did not expect error for the Record Action Condition');
+    }
+
+    @IsTest
+    static void itShouldValidateConditions_failing() {
+        sflib_RecordAction__c action = generateRecordAction('Test', Schema.Account.SObjectType, '2');
+        sflib_RecordActionCondition__c condition = generateRecordActionCondition(1, 'Names="Test"', action, Schema.Account.SObjectType);
+
+        fflib_ApexMocks mocks = new fflib_ApexMocks();
+        sflib_IRecordActionsSelector actionsSelectorMock = (sflib_IRecordActionsSelector) mocks.mock(sflib_IRecordActionsSelector.class);
+        sflib_IRecordActionConditionsSelector conditionsSelectorMock = (sflib_IRecordActionConditionsSelector) mocks.mock(sflib_IRecordActionConditionsSelector.class);
+
+        mocks.startStubbing();
+        mocks.when(actionsSelectorMock.selectById(new Set<Id>{action.Id}))
+                .thenReturn(new List<sflib_RecordAction__c> {action});
+        mocks.when(conditionsSelectorMock.selectByRecordActionId(new Set<Id>{action.Id}))
+                .thenReturn(new List<sflib_RecordActionCondition__c> {condition});
+        mocks.stopStubbing();
+
+        sflib_RecordActionsSelector.replaceWith(actionsSelectorMock);
+        sflib_RecordActionConditionsSelector.replaceWith(conditionsSelectorMock);
+
+        System.Test.startTest();
+        new sflib_RecordActionsServiceImpl().validate(new List<sflib_RecordAction__c>{action});
+        new sflib_RecordActionsServiceImpl().validate(new List<sflib_RecordActionCondition__c>{condition});
+        System.Test.stopTest();
+
+        System.Assert.isTrue(action.hasErrors(), 'Did not expect error for the Record Action');
+        System.Assert.isTrue(condition.hasErrors(), 'Did not expect error for the Record Action Condition');
     }
 
     /**

@@ -89,6 +89,21 @@ public virtual inherited sharing class sflib_RecordActions extends fflib_SObject
 	}
 
 	/**
+	 * Adds a DML error message to each record in the domain
+	 *
+	 * @param sObjectField The SObjectField to which the error message should be linked
+	 * @param message The error message
+	 *
+	 * @return Returns an instance of itself to allow for method chaining
+	 */
+	public sflib_IRecordActions addErrorMessage(SObjectField sObjectField, String message) {
+		for (SObject record : this.getRecords()) {
+			record.addError(sObjectField, message);
+		}
+		return this;
+	}
+
+	/**
 	 * Get the `sflib_RecordAction__c` records the domain contains
 	 *
 	 * @return Returns the list of `sflib_RecordAction__c` records
@@ -137,6 +152,27 @@ public virtual inherited sharing class sflib_RecordActions extends fflib_SObject
 	}
 
 	/**
+	 * Get a set of referenced formula numbers by their record Id
+	 *
+	 * @return Returns the numbers referenced in the `Formula__c` field by their record Id
+	 */
+	public Map<Id, Set<Integer>> getFormulaNumbersById() {
+		Map<Id, Set<Integer>> result = new Map<Id, Set<Integer>>();
+		for (sflib_RecordAction__c record : getRecordActions()) {
+			Pattern MyPattern = Pattern.compile('\\d++');
+			Matcher MyMatcher = MyPattern.matcher(record.Formula__c);
+
+			Set<Integer> matches = new Set<Integer>();
+			while (MyMatcher.find()) {
+				// m.group() is an alias for m.group(0), which returns the full match
+				matches.add(Integer.valueOf(MyMatcher.group()));
+			}
+			result.put(record.Id, matches);
+		}
+		return result;
+	}
+
+	/**
 	 * Gets a sub-selection of the `sflib_RecordAction__c` records matching the given ids
 	 *
 	 * @param ids A set of `sflib_RecordAction__c.Id` values
@@ -163,6 +199,31 @@ public virtual inherited sharing class sflib_RecordActions extends fflib_SObject
 	 */
 	public sflib_IRecordActions selectBySObjectType(String sObjectName) {
 		return new sflib_RecordActions(getRecords(Schema.sflib_RecordAction__c.SObjectType__c, sObjectName));
+	}
+
+	/**
+	 * Gets a sub-selection of the `sflib_RecordAction__c` records matching the given Status value
+	 *
+	 * @param statusValue A `sflib_RecordAction__c.Status__c` value
+	 *
+	 * @return Returns a new instance of the sflib_RecordActions domain containing the matching records
+	 *
+	 * @example sflib_IRecordActions subset = recordActions.selectByStatus('Draft');
+	 */
+	public sflib_IRecordActions selectByStatus(String statusValue) {
+		return new sflib_RecordActions(getRecords(Schema.sflib_RecordAction__c.Status__c, statusValue));
+	}
+
+	/**
+	 * Sets a new value for the Status field
+	 *
+	 * @param statusValue The new value for the `Status__c` field
+	 *
+	 * @return Returns an instance of itself to allow for method chaining
+	 */
+	public sflib_IRecordActions setStatus(String statusValue) {
+		setFieldValue(Schema.sflib_RecordAction__c.Status__c, statusValue);
+		return this;
 	}
 
 	/**

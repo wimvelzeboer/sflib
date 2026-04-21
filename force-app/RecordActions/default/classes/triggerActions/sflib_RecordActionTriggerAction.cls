@@ -1,7 +1,5 @@
 /**
- * sflib_IRecordActionConditionsSelector interface class
- *
- * Selector Interface Class providing common database query support for abstracting and encapsulating query logic
+ * sflib_RecordActionConditionTriggerAction class
  *
   * @author architect ir. Wilhelmus G.J. Velzeboer
  *
@@ -29,29 +27,27 @@
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @see fflib_ISObjectSelector
- * @see sflib_RecordActionConditionsSelector
+ * @see fflib_TriggerAction
+ * @see sflib_RecordActionTrigger
  */
-public interface sflib_IRecordActionConditionsSelector
-		extends fflib_ISObjectSelector
-{
-	/**
-	 * Queries `sflib_RecordActionCondition__c` records by their record Id
-	 *
-	 * @param idSet A set of `sflib_RecordActionCondition__c.Id` values
-	 *
-	 * @return A list of `sflib_RecordActionCondition__c` records
-	 */
-	List<sflib_RecordActionCondition__c> selectById(Set<Id> idSet);
+public with sharing class sflib_RecordActionTriggerAction extends fflib_TriggerAction {
 
-	/**
-	 * Queries `sflib_RecordActionCondition__c` records by their related record action Id
-	 *
-	 * @param recordActionIds A set of `sflib_RecordActionCondition__c.RecordAction__c` values
-	 *
-	 * @return A list of `sflib_RecordActionCondition__c` records
-	 */
-    List<sflib_RecordActionCondition__c> selectByRecordActionId(Set<Id> recordActionIds);
+    public override void onBeforeInsert() {
+        sflib_IRecordActions actions = sflib_RecordActions.newInstance(triggerContext.getRecords());
+        onStatusActiveAddError(actions);
+    }
 
-	fflib_SObjectSelector setDataAccess(fflib_SObjectSelector.DataAccess access);
+    public override void onBeforeUpdate() {
+        sflib_RecordActionsService.validate((List<sflib_RecordAction__c>) triggerContext.getRecords());
+    }
+
+    public override void onAfterUnDelete() {
+        sflib_IRecordActions actions = sflib_RecordActions.newInstance(triggerContext.getRecords());
+        update actions.setStatus('Draft').getRecords();
+    }
+
+    private static void onStatusActiveAddError(sflib_IRecordActions actions) {
+        actions.selectByStatus('Active')
+                .addErrorMessage(Schema.sflib_RecordAction__c.Status__c, 'Active Record Actions required related conditions');
+    }
 }

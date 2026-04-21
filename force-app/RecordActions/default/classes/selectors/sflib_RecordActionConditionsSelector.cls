@@ -119,4 +119,19 @@ public virtual without sharing class sflib_RecordActionConditionsSelector
 						.toSOQL()
 		);
 	}
+
+	/**
+	 * Queries `sflib_RecordActionCondition__c` records by their related record action Id
+	 *
+	 * @param recordActionIds A set of `sflib_RecordActionCondition__c.RecordAction__c` values
+	 *
+	 * @return A list of `sflib_RecordActionCondition__c` records
+	 */
+	public List<sflib_RecordActionCondition__c> selectByRecordActionId(Set<Id> recordActionIds) {
+		return Database.query(
+				newQueryFactory()
+						.setCondition('RecordAction__c IN :recordActionIds')
+						.toSOQL()
+		);
+	}
 }

@@ -3,7 +3,7 @@
  *
  * Service for the LWC sflibRecordActions functionality,
  *
-  * @author architect ir. Wilhelmus G.J. Velzeboer
+ * @author architect ir. Wilhelmus G.J. Velzeboer
  *
  * Copyright (c), W.G.J. Velzeboer,
  * All rights reserved.
@@ -55,8 +55,6 @@ public with sharing class sflib_RecordActionsService
 	 *
 	 * @return Returns A domain with record actions grouped in by the record id
 	 *
-	 * @throws sflib_RecordActionsService.ServiceException on errors
-	 *
 	 * @see sflib_IRecordActions
 	 * @see sflib_RecordActions
 	 */
@@ -65,6 +63,27 @@ public with sharing class sflib_RecordActionsService
 		return newInstance().getActions(idSet);
 	}
 
+	/**
+	 * Validates the given record action conditions and their related record action,
+	 * a record DML error is added with a message if a problem is found
+	 *
+	 * @param records A list of `sflib_RecordActionCondition__c` records to validate
+	 */
+	public static void validate(List<sflib_RecordActionCondition__c> records)
+	{
+		newInstance().validate(records);
+	}
+
+	/**
+	 * Validates the given record action and their related record action conditions,
+	 * a record DML error is added with a message if a problem is found
+	 *
+	 * @param records A list of `sflib_RecordAction__c` records to validate
+	 */
+	public static void validate(List<sflib_RecordAction__c> records)
+	{
+		newInstance().validate(records);
+	}
 
 	/**
 	 * Replace the default implementation of the service
@@ -101,7 +120,5 @@ public with sharing class sflib_RecordActionsService
 	{
 		return (implementationReplacement == null) ? (sflib_IRecordActionsService) implementationType.newInstance() : implementationReplacement;
 	}
-
-	public class ServiceException extends System.Exception {}
 }
  
