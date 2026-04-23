@@ -14,10 +14,10 @@ This package is dependent on the following packages:
 
 The package is available as an Unlocked Managed Package (2GP) with package ID `0HoJ8000000KyjkKAC`.
 
-Either clone the repository and import the package manually, use the [Package Installation URL](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t000000000000000)
+Either clone the repository and import the package manually, use the [Package Installation URL](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ8000000kaPvIAI)
 or execute the following SFDX CLI command in your terminal:
 ```bash
-sf package install --package 04t000000000000000 --wait=10 --target-org $YOUR_ORG_ALIAS
+sf package install --package 04tJ8000000kaPvIAI --wait=10 --target-org $YOUR_ORG_ALIAS
 ```
 _Replace `$YOUR_ORG_ALIAS` with the alias of your target org_
 
@@ -53,3 +53,4 @@ sf sfdmu run --sourceusername csvfile --targetusername $ORG_ALIAS
 
 | Package version | Package ID         | Description                    |
 |-----------------|--------------------|--------------------------------|
+| 0.1.0.7 | 04tJ8000000kaPvIAI | Created on 23/04/2026 07:54:50 |
