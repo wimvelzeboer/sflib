@@ -23,10 +23,10 @@ _Replace `$YOUR_ORG_ALIAS` with the alias of your target org_
 
 
 ## Component Library
-|                                                     |                                                                                                                                  |
-|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| ![Record Actions](./docs/feature/record-action.png) | [Record Actions](./docs/feature/record-action.md)<br/>Listing of record specific actions which are based on configurable fomulas |
-|                                                     |                                                                                                                                  |
+|                                                     |                                                                                                                                   |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| ![Record Actions](./docs/feature/record-action.png) | [Record Actions](./docs/feature/record-actions.md)<br/>Listing of record specific actions which are based on configurable fomulas |
+|                                                     |                                                                                                                                   |
 
 
 ## Usage
