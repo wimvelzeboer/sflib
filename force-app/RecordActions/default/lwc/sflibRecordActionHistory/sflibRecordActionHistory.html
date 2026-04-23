@@ -1,0 +1,38 @@
+<!-- Sflib Record Action History -->
+<template>
+    <lightning-modal-header label="Record Action History"></lightning-modal-header>
+    <lightning-modal-body>
+        <template if:true={isLoading}>
+            <div class="spinner-container">
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <lightning-datatable
+                lwc:if={hasData}
+                key-field="id"
+                data={data}
+                columns={columns}
+                hide-checkbox-column="true"
+                sorted-by={sortedBy}
+                sorted-direction={sortedDirection}
+                onsort={handleSort}
+        ></lightning-datatable>
+
+        <lightning-empty-state
+                lwc:else
+                size="small"
+                illustration-name="noresults:search"
+                title="No results found">
+            <p slot="description">There is no history of Record Actions.</p>
+        </lightning-empty-state>
+
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button
+                label="Close"
+                class="slds-button"
+                onclick={handleCloseClick}
+        ></lightning-button>
+    </lightning-modal-footer>
+</template>

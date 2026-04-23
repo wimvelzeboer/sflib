@@ -55,3 +55,6 @@ target/
 **/tsconfig*.json
 **/*.tsbuildinfo
 **/graphql.config.yml
+
+# Ignore default folder (as everything should be in sub-folders)
+force-app/main/default

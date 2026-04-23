@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RecordAction__c</fullName>
+    <label>Record Action</label>
+    <referenceTo>sflib_RecordAction__c</referenceTo>
+    <relationshipLabel>Record Action History</relationshipLabel>
+    <relationshipName>RecordActionHistory</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>
