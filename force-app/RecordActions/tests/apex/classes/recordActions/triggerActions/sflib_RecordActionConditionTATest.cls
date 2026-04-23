@@ -35,7 +35,7 @@
 private class sflib_RecordActionConditionTATest {
 
     @IsTest
-    static void itShouldCheckForUniqueNumbers() {
+    static void itShouldValidate() {
 
         final Id recordActionId = fflib_IDGenerator.generate(sflib_RecordAction__c.SObjectType);
         sflib_RecordActionCondition__c recordA = generateRecordActionCondition(recordActionId, 1);
@@ -43,13 +43,9 @@ private class sflib_RecordActionConditionTATest {
         List<sflib_RecordActionCondition__c> records = new List<sflib_RecordActionCondition__c>{recordA, recordB};
 
         fflib_ApexMocks mocks = new fflib_ApexMocks();
-        sflib_IRecordActionConditionsSelector selectorMock = (sflib_IRecordActionConditionsSelector) mocks.mock(sflib_IRecordActionConditionsSelector.class);
+        sflib_IRecordActionsService serviceMock = (sflib_IRecordActionsService) mocks.mock(sflib_IRecordActionsService.class);
 
-        mocks.startStubbing();
-        mocks.when(selectorMock.selectByRecordActionId(new Set<Id>{recordActionId}))
-                .thenReturn(records);
-        mocks.stopStubbing();
-        sflib_RecordActionConditionsSelector.replaceWith(selectorMock);
+        sflib_RecordActionsService.replaceWith(serviceMock);
 
         fflib_TriggerContext triggerContext = new fflib_TriggerContext(records);
         triggerContext.triggerOperation = TriggerOperation.AFTER_INSERT;
@@ -58,38 +54,15 @@ private class sflib_RecordActionConditionTATest {
 
         System.Test.startTest();
         triggerAction.doWork();
-        System.Test.stopTest();
-
-        System.Assert.isTrue(recordA.getErrors().isEmpty(), 'Did not expect DML error, but got some');
-    }
-
-    @IsTest
-    static void itShouldCheckForUniqueNumbers_failing() {
-
-        final Id recordActionId = fflib_IDGenerator.generate(sflib_RecordAction__c.SObjectType);
-        sflib_RecordActionCondition__c recordA = generateRecordActionCondition(recordActionId, 1);
-        sflib_RecordActionCondition__c recordB = generateRecordActionCondition(recordActionId, 1);
-        List<sflib_RecordActionCondition__c> records = new List<sflib_RecordActionCondition__c>{recordA, recordB};
-
-        fflib_ApexMocks mocks = new fflib_ApexMocks();
-        sflib_IRecordActionConditionsSelector selectorMock = (sflib_IRecordActionConditionsSelector) mocks.mock(sflib_IRecordActionConditionsSelector.class);
-
-        mocks.startStubbing();
-        mocks.when(selectorMock.selectByRecordActionId(new Set<Id>{recordActionId}))
-                .thenReturn(records);
-        mocks.stopStubbing();
-        sflib_RecordActionConditionsSelector.replaceWith(selectorMock);
-
-        fflib_TriggerContext triggerContext = new fflib_TriggerContext(records);
         triggerContext.triggerOperation = TriggerOperation.AFTER_UPDATE;
-        sflib_RecordActionConditionTriggerAction triggerAction = new sflib_RecordActionConditionTriggerAction();
-        triggerAction.setContext(triggerContext);
-
-        System.Test.startTest();
+        triggerAction.doWork();
+        triggerContext.triggerOperation = TriggerOperation.AFTER_DELETE;
+        triggerAction.doWork();
+        triggerContext.triggerOperation = TriggerOperation.AFTER_UNDELETE;
         triggerAction.doWork();
         System.Test.stopTest();
 
-        System.Assert.isFalse(recordA.getErrors().isEmpty(), 'Expected DML errors, but got none');
+        ((sflib_IRecordActionsService) mocks.verify(serviceMock, 4)).validate(records);
     }
 
     private static sflib_RecordActionCondition__c generateRecordActionCondition(Id recordActionId, Decimal conditionNumber) {
