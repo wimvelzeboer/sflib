@@ -6,9 +6,9 @@ A record action is an action that can be performed on a record, by invoking a sc
 
 The actions are displayed in a list or tiles view. It can contain an action menu at the top right corner, when there are items to show (eg. history is enabled or the current user is an record action manager).
 
-![List View](./docs/feature/record-action_list-view.png "List View")
+![List View](record-action_list-view.png "List View")
 
-![tiles](./docs/feature/record-action_tile-view.png "Tiles View")
+![tiles](record-action_tile-view.png "Tiles View")
 
 
 __Contents__:
@@ -22,7 +22,7 @@ __Contents__:
 ## Configurational options
 Record actions can be configured to in the `Record Actions Setup` App.
 
-![Record Actions Setup](./docs/feature/record-action_setup.png "Record Actions Setup")
+![Record Actions Setup](record-action_setup.png "Record Actions Setup")
 
 This app holds the record actions, offered by the SFLib Record Action feature and the record action settings.
 Tabs:
@@ -31,7 +31,7 @@ Tabs:
 
 ### Manage Record Actions
 
-![Record Actions Setup Detail](./docs/feature/record-action_setup-detail.png "Record Actions Setup Detail")<br/>
+![Record Actions Setup Detail](record-action_setup-detail.png "Record Actions Setup Detail")<br/>
 _Actions Detail page of the 'Record Actions Setup' Lightning App._
 
 Showing actions based on a formula with conditions like
@@ -41,7 +41,7 @@ Showing actions based on a formula with conditions like
 
 ### Manage Record Action Settings
 
-![Record Actions Setup Settings](./docs/feature/record-action_setup-settings.png "Record Actions Setup Settings")<br/>
+![Record Actions Setup Settings](record-action_setup-settings.png "Record Actions Setup Settings")<br/>
 _Configurable settings can be managed under the settings tab_
 
 ## Database Schema
@@ -128,7 +128,7 @@ The component has no methods.
 </template>
 ```
 
-![tiles](./docs/feature/record-action_tile-view.png "Tiles View")
+![tiles](record-action_tile-view.png "Tiles View")
 
 
 ## Permissions
