@@ -141,6 +141,33 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     actions = [];
 
     /**
+     * The current pagination page
+     * @type {number}
+     */
+    currentPage = 1;
+
+    /**
+     * The number of action on each pagination page
+     * @type {number}
+     */
+    pageSize = 6;
+
+    /**
+     * The paginated actions displayed in the component
+     * @type @type {{
+     *     actionId: string,
+     *     state: 'idle'|'running'|'completed'|'failed',
+     * }[]}
+     */
+    paginatedData = [];
+
+    /**
+     * The total amount of pagination pages
+     * @type {number}
+     */
+    totalPages = 0;
+
+    /**
      * The Icon name used in the UI
      * @type {string}
      * @private
@@ -231,6 +258,22 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     }
 
     /**
+     * Checks if the "Next" pagination option should be disabled
+     * @return {boolean}
+     */
+    get isNextDisabled() {
+        return this.currentPage === this.totalPages;
+    }
+
+    /**
+     * Checks if the "Previous" pagination option should be disabled
+     * @return {boolean}
+     */
+    get isPreviousDisabled() {
+        return this.currentPage === 1;
+    }
+
+    /**
      * Returns true if the menu needs to be displayed.
      * It shows if the user has the administrator permission for the Record Actions feature
      * or the history log is enabled
@@ -246,6 +289,26 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
      */
     handleActionStatusChange() {
         this.dispatchEvent(new RefreshEvent());
+    }
+
+    /**
+     * Show the next page in the pagination
+     */
+    handleNext() {
+        if (this.currentPage < this.totalPages) {
+            this.currentPage++;
+            this.updatePaginatedData();
+        }
+    }
+
+    /**
+     * Show the previous page in the pagination
+     */
+    handlePrevious() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            this.updatePaginatedData();
+        }
     }
 
     /**
@@ -279,6 +342,8 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
         getActions({idString: this.recordId})
             .then(result => {
                 this.actions = result;
+                this.totalPages = Math.ceil(result.length / this.pageSize);
+                this.updatePaginatedData();
             })
             .catch(error => {
                 console.error(error);
@@ -300,5 +365,14 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
                 mode: 'sticky'
             })
         );
+    }
+
+    /**
+     * Updates the paginated data that is displayed in the UI
+     */
+    updatePaginatedData() {
+        const start = (this.currentPage - 1) * this.pageSize;
+        const end = start + this.pageSize;
+        this.paginatedData = this.actions.slice(start, end);
     }
 }

@@ -20,7 +20,7 @@
             </lightning-button-menu>
         </div>
         <div class="slds-grid slds-wrap slds-p-left_x-small slds-p-right_x-small">
-            <template for:each={actions} for:item="action" key={action.actionId}>
+            <template for:each={paginatedData} for:item="action" key={action.actionId}>
                 <div class={className} key={action.actionId}>
                     <c-sflib-record-action
                             action-id={action.actionId}
@@ -31,6 +31,13 @@
                     ></c-sflib-record-action>
                 </div>
             </template>
+        </div>
+
+        <!--- Pagination --->
+        <div class="slds-align_absolute-center slds-m-top_medium">
+            <lightning-button label="Previous" onclick={handlePrevious} disabled={isPreviousDisabled}></lightning-button>
+            <span class="slds-m-horizontal_medium">{currentPage} of {totalPages}</span>
+            <lightning-button label="Next" onclick={handleNext} disabled={isNextDisabled}></lightning-button>
         </div>
     </lightning-card>
 </template>
