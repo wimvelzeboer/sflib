@@ -1,7 +1,7 @@
 /**
  * SflibRecordActions LWC Component
  *
- * LWC component to display a list of record actions that can be performed on a record, by invoking a screen-flow.
+ * LWC component to display a card containing a list of record actions that can be performed on a record, by invoking a screen-flow.
  * Listed actions are filtered based on a configured set of criteria.
  *
  * @author architect ir. Wilhelmus G.J. Velzeboer
@@ -39,10 +39,7 @@
  * ></c-sflib-record-actions>
  */
 import {api, LightningElement, wire} from 'lwc';
-import getActions from '@salesforce/apex/sflib_RecordActionsController.getActions';
 import getSettings from '@salesforce/apex/sflib_RecordActionConfigController.getConfig';
-import {getRecord} from "lightning/uiRecordApi";
-import {RefreshEvent} from 'lightning/refresh';
 import hasAdminPermission from '@salesforce/customPermission/sflib_RecordActionAdmin';
 import historyModal from 'c/sflibRecordActionHistory';
 import {NavigationMixin} from 'lightning/navigation';
@@ -53,6 +50,7 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     /**
      * The Icon name used in the UI
      * @param value {string}
+     * @default `custom:custom9`
      * @public
      */
     @api
@@ -87,6 +85,7 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
      * The title used in the UI
      *
      * @type {string}
+     * @default `Actions`
      * @public
      */
     @api
@@ -110,6 +109,7 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     /**
      * The variant of how the actions are displayed
      * @type {'list'|'tiles'}
+     * @default 'list'
      * @public
      */
     @api
@@ -122,6 +122,21 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     }
 
     /**
+     * Show a search bar at the top of the component to filter the actions,
+     * @default false, which shows only a search icon in the card actions slot
+     * @param value {boolean}
+     * @public
+     */
+    @api
+    set showSearch(value) {
+        this._enableSearch = value === true;
+    }
+
+    get showSearch() {
+        return this._enableSearch;
+    }
+
+    /**
      * Returns the variant of how the actions are displayed
      * @returns {string}
      * @public
@@ -130,42 +145,18 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
         return this._variant;
     }
 
+    /**
+     * See all actions, unrelated to the conditions
+     * @type {boolean}
+     */
+    seeAll = false;
 
     /**
-     * A list of `sflib_RecordAction.Id` values
-     * @type {{
-     *     actionId: string,
-     *     state: 'idle'|'running'|'completed'|'failed',
-     * }[]}
+     * Show a search bar at the top of the component to filter the actions,
+     * @param value {boolean}
+     * @private
      */
-    actions = [];
-
-    /**
-     * The current pagination page
-     * @type {number}
-     */
-    currentPage = 1;
-
-    /**
-     * The number of action on each pagination page
-     * @type {number}
-     */
-    pageSize = 6;
-
-    /**
-     * The paginated actions displayed in the component
-     * @type @type {{
-     *     actionId: string,
-     *     state: 'idle'|'running'|'completed'|'failed',
-     * }[]}
-     */
-    paginatedData = [];
-
-    /**
-     * The total amount of pagination pages
-     * @type {number}
-     */
-    totalPages = 0;
+    _enableSearch = false;
 
     /**
      * The Icon name used in the UI
@@ -177,13 +168,18 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     /**
      * Holds the settings for the Record Actions feature
      * @type {{
+     *      highlight:boolean,
      *      historyLog:boolean,
-     *      militaryTime:boolean
+     *      militaryTime:boolean,
+     *      seeAll:boolean,
      * }}
      * @private
      */
     _settings = {
-        historyLog: false
+        highlight: false,
+        historyLog: false,
+        militaryTime: false,
+        seeAll: false,
     };
 
     /**
@@ -201,21 +197,6 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     _variant = 'list';
 
     /**
-     * Loads the actions when the component is done loading
-     */
-    @wire(getRecord, {recordId: "$recordId", fields: ['Id']})
-    getWiredRecord({error, data}) {
-        if (error) {
-            console.error(error);
-            this.showError('Error retrieving Record data: ' + error.body.message);
-        }
-        if (data) {
-            // reload actions whenever the record changes
-            this.loadActions();
-        }
-    }
-
-    /**
      * Loads the actions settings
      */
     @wire(getSettings, {})
@@ -228,17 +209,6 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
             // reload actions whenever the record changes
             this._settings = data;
         }
-    }
-
-    /**
-     * Returns the class name for the c-sflib-record-action component wrapper based on the variant
-     * @returns {string}
-     */
-    get className() {
-        return 'slds-col slds-m-bottom_small '
-            + (this._variant === 'list' ?
-                'slds-size_1-of-1' :
-                'slds-small-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3');
     }
 
     /**
@@ -258,19 +228,19 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     }
 
     /**
-     * Checks if the "Next" pagination option should be disabled
+     * Returns true if the See All is enabled
      * @return {boolean}
      */
-    get isNextDisabled() {
-        return this.currentPage === this.totalPages;
+    get seeAllEnabled() {
+        return this._settings.seeAll;
     }
 
     /**
-     * Checks if the "Previous" pagination option should be disabled
-     * @return {boolean}
+     * Returns the name of the see all menu item, toggles between Applicable and All
+     * @return {String}
      */
-    get isPreviousDisabled() {
-        return this.currentPage === 1;
+    get seeAllLabel() {
+        return this.seeAll === true ? 'See Applicable Actions' : 'See All Actions'
     }
 
     /**
@@ -281,34 +251,23 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
      * @return {boolean}
      */
     get showMenu() {
-        return this._settings.historyLog || hasAdminPermission;
+        return this._settings.historyLog || this._settings.seeAll || hasAdminPermission;
     }
 
     /**
-     * Handles the change event from the child component
+     * Returns true if the search icon should be displayed.
+     * @return {boolean}
      */
-    handleActionStatusChange() {
-        this.dispatchEvent(new RefreshEvent());
+    get showSearchIcon() {
+        return !this._enableSearch;
     }
 
     /**
-     * Show the next page in the pagination
+     * Handles the click event of the card search icon
      */
-    handleNext() {
-        if (this.currentPage < this.totalPages) {
-            this.currentPage++;
-            this.updatePaginatedData();
-        }
-    }
-
-    /**
-     * Show the previous page in the pagination
-     */
-    handlePrevious() {
-        if (this.currentPage > 1) {
-            this.currentPage--;
-            this.updatePaginatedData();
-        }
+    handleSearchToggle() {
+        console.log('Toggle search');
+        this._enableSearch = !this._enableSearch;
     }
 
     /**
@@ -324,6 +283,14 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
     }
 
     /**
+     * Handles the click event of the See All menu item
+     * @return {Promise<void>}
+     */
+    async handleSeeAll() {
+        this.seeAll = this.seeAll !== true;
+    }
+
+    /**
      * Handles the click event of the show settings menu item
      */
     handleShowSettings() {
@@ -333,22 +300,6 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
                 apiName: 'sflib_RecordActionConfig'
             }
         });
-    }
-
-    /**
-     * Loads the actions for the record
-     */
-    loadActions() {
-        getActions({idString: this.recordId})
-            .then(result => {
-                this.actions = result;
-                this.totalPages = Math.ceil(result.length / this.pageSize);
-                this.updatePaginatedData();
-            })
-            .catch(error => {
-                console.error(error);
-                this.showError('Error retrieving Record Actions: ' + error.body.message);
-            });
     }
 
     /**
@@ -365,14 +316,5 @@ export default class SflibRecordActions extends NavigationMixin(LightningElement
                 mode: 'sticky'
             })
         );
-    }
-
-    /**
-     * Updates the paginated data that is displayed in the UI
-     */
-    updatePaginatedData() {
-        const start = (this.currentPage - 1) * this.pageSize;
-        const end = start + this.pageSize;
-        this.paginatedData = this.actions.slice(start, end);
     }
 }

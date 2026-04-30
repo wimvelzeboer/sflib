@@ -23,6 +23,7 @@
                     message-toggle-inactive="AM/PM"
                     name="militaryTime"
                     checked={militaryTime}
+                    disabled={disableMilitaryTimeOption}
                     onchange={handleMilitaryTimeChange}>
             </lightning-input>
 
@@ -33,6 +34,14 @@
                     checked={highlight}
                     disabled={disableHighlightOption}
                     onchange={handleHighlightChange}>
+            </lightning-input>
+
+            <lightning-input
+                    type="toggle"
+                    label="See & Execute All Actions"
+                    name="seeAll"
+                    checked={seeAll}
+                    onchange={handleSeeAllChange}>
             </lightning-input>
 
         </div>

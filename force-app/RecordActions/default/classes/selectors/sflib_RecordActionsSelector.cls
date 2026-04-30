@@ -86,15 +86,15 @@ public virtual without sharing class sflib_RecordActionsSelector
 	 *
 	 * @return Returns a list of default fields that are always queried
 	 */
-	public virtual List<Schema.SObjectField> getSObjectFieldList()
-	{
-		List<SObjectField> result = new List<Schema.SObjectField>
-		{
+	@SuppressWarnings('ApexUnusedDeclaration')
+	public virtual List<Schema.SObjectField> getSObjectFieldList() {
+		List<SObjectField> result = new List<Schema.SObjectField>{
 				sflib_RecordAction__c.Id,
 				sflib_RecordAction__c.Description__c,
 				sflib_RecordAction__c.FlowName__c,
 				sflib_RecordAction__c.Formula__c,
 				sflib_RecordAction__c.Icon__c,
+				sflib_RecordAction__c.Name,
 				sflib_RecordAction__c.Order__c,
 				sflib_RecordAction__c.SObjectType__c,
 				sflib_RecordAction__c.Status__c
@@ -109,8 +109,8 @@ public virtual without sharing class sflib_RecordActionsSelector
 	 *
 	 * @return the SObjectType of this selector
 	 */
-	public Schema.SObjectType getSObjectType()
-	{
+	@SuppressWarnings('ApexUnusedDeclaration')
+	public Schema.SObjectType getSObjectType() {
 		return Schema.sflib_RecordAction__c.SObjectType;
 	}
 
@@ -168,9 +168,8 @@ public virtual without sharing class sflib_RecordActionsSelector
 						'RecordActionConditions__r'
 				);
 
-		Set<String> statuses = new Set<String>{
-				'Active'
-		};
+		@SuppressWarnings('ApexUnusedDeclaration')
+		Set<String> statuses = new Set<String>{'Active'};
 
 		return Database.query(
 				queryFactory
