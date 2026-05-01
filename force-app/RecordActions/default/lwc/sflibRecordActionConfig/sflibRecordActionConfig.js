@@ -49,9 +49,15 @@ export default class SflibRecordActionConfig extends LightningElement {
      *      highlight:boolean,
      *      historyLog:boolean,
      *      militaryTime:boolean,
+     *      seeAll:boolean,
      * }}
      */
-    settings = {};
+    settings = {
+        highlight: false,
+        historyLog: false,
+        militaryTime: false,
+        seeAll: false,
+    };
 
     /**
      * Loads the settings when the component is done loading
@@ -102,10 +108,26 @@ export default class SflibRecordActionConfig extends LightningElement {
     }
 
     /**
+     * Get the value of the SeeAll setting
+     * @return {boolean}
+     */
+    get seeAll() {
+        return this.settings.seeAll;
+    }
+
+    /**
      * Highlighting is only available when the history log is enabled
      * @return {boolean}
      */
     get disableHighlightOption() {
+        return !this.settings.historyLog;
+    }
+
+    /**
+     * Military time is only available when the history log is enabled
+     * @return {boolean}
+     */
+    get disableMilitaryTimeOption() {
         return !this.settings.historyLog;
     }
 
@@ -136,6 +158,15 @@ export default class SflibRecordActionConfig extends LightningElement {
      */
     handleMilitaryTimeChange(event) {
         this.settings = { ...this.settings, militaryTime: event.target.checked };
+        this.saveSettings();
+    }
+
+    /**
+     * Handles the change event of the See All setting
+     * @param event
+     */
+    handleSeeAllChange(event) {
+        this.settings = { ...this.settings, seeAll: event.target.checked };
         this.saveSettings();
     }
 

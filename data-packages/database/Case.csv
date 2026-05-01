@@ -1,4 +1,7 @@
 ﻿"Id","CaseNumber","Subject","Status","Origin","Description","ContactId","AccountId","Contact.Name","Account.Name"
 "500Fg00000mBixRIAS","00001026","Aemail00DB0000000KlV9Aemail","New","Web","Aemail00DB0000000KlV9Aemail","#N/A","#N/A","#N/A","#N/A"
 "500Fg00000mBixSIAS","00001027","Aemail00DB0000000KlV9Aemail","New","Web","Aemail00DB0000000KlV9Aemail","#N/A","#N/A","#N/A","#N/A"
-"500Fg00000mNiEPIA0","00001028","#N/A","Open","Phone","#N/A","003Fg00001Mina7IAB","#N/A","John Smith","#N/A"
+"500Fg00000mNiEPIA0","00001028","#N/A","New","Phone","#N/A","003Fg00001Mina7IAB","#N/A","John Smith","#N/A"
+"500Fg00000n0KKMIA2","00001029","#N/A","New","Email","#N/A","003Fg00001Mina7IAB","#N/A","John Smith","#N/A"
+"500Fg00000n0lUHIAY","00001030","#N/A","Closed","Email","#N/A","003Fg00001Mina7IAB","#N/A","John Smith","#N/A"
+"500Fg00000n1GL4IAM","00001031","#N/A","New","Email","#N/A","003Fg00001Mina7IAB","#N/A","John Smith","#N/A"

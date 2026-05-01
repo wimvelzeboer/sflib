@@ -49,7 +49,7 @@ public inherited sharing class sflib_RecordActionsServiceImpl implements sflib_I
 	{
 		Map<String, Set<Id>> idsBySObjectName = getSObjectTypes(idSet);
 		sflib_IRecordActions recordActions = sflib_RecordActions.newInstance(
-				sflib_RecordActionsSelector.newElevatedInstance()
+				sflib_RecordActionsSelector.newInstance()
 						.selectBySObjectType(idsBySObjectName.keySet())
 		);
 
@@ -131,7 +131,7 @@ public inherited sharing class sflib_RecordActionsServiceImpl implements sflib_I
 
 	private static sflib_IRecordActionConditions fetchConditions(Set<Id> recordActionIds) {
 		sflib_IRecordActionConditions existing = sflib_RecordActionConditions.newInstance(
-				sflib_RecordActionConditionsSelector.newElevatedInstance()
+				sflib_RecordActionConditionsSelector.newInstance()
 						.selectByRecordActionId(recordActionIds)
 		);
 		return existing;
