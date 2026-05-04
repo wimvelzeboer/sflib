@@ -39,6 +39,9 @@ private class sflib_RecordActionsControllerTest {
         // GIVEN a case record
         final Id recordId = fflib_IDGenerator.generate(Schema.Case.SObjectType);
         final Set<Id> recordIds = new Set<Id>{recordId};
+        sflib_RecordActionSettings settings = sflib_RecordActionSettings.newInstance();
+        settings.highlight = true;
+        sflib_RecordActionSettings.replaceWith(settings);
 
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         sflib_IRecordActionsService serviceMock = (sflib_IRecordActionsService) mocks.mock(sflib_IRecordActionsService.class);
@@ -63,7 +66,7 @@ private class sflib_RecordActionsControllerTest {
 
         // WHEN we want to list the record actions
         System.Test.startTest();
-        List<sflib_RecordActionsController.ActionData> result = sflib_RecordActionsController.getActions(recordId);
+        List<sflib_RecordActionsController.ActionData> result = sflib_RecordActionsController.getActions(recordId, false);
         System.Test.stopTest();
 
         // THEN we get the list of actions
@@ -89,7 +92,7 @@ private class sflib_RecordActionsControllerTest {
         // WHEN we want to list the record actions
         System.Test.startTest();
         try {
-            sflib_RecordActionsController.getActions(recordId);
+            sflib_RecordActionsController.getActions(recordId, false);
             System.Assert.fail('Expected an exception');
         } catch (AuraHandledException e) {
 
@@ -97,5 +100,42 @@ private class sflib_RecordActionsControllerTest {
             System.Assert.fail('Incorrect exception thrown');
         }
         System.Test.stopTest();
+    }
+
+    @IsTest
+    static void testActionData() {
+        sflib_RecordActionsController.ActionData actionDataA = new sflib_RecordActionsController.ActionData(
+                new sflib_RecordAction__c(
+                        Id = fflib_IDGenerator.generate(sflib_RecordAction__c.SObjectType),
+                        Name = 'Action A'
+                ),
+                'Started'
+        );
+        sflib_RecordActionsController.ActionData actionDataB = new sflib_RecordActionsController.ActionData(
+                new sflib_RecordAction__c(
+                        Id = fflib_IDGenerator.generate(sflib_RecordAction__c.SObjectType),
+                        Name = 'Action B'
+                ),
+                'Completed'
+        );
+        sflib_RecordActionsController.ActionData actionDataC = new sflib_RecordActionsController.ActionData(
+                new sflib_RecordAction__c(
+                        Id = fflib_IDGenerator.generate(sflib_RecordAction__c.SObjectType),
+                        Name = 'Action C'
+                ),
+                'Failed'
+        );
+        sflib_RecordActionsController.ActionData actionDataD = new sflib_RecordActionsController.ActionData(
+                new sflib_RecordAction__c(
+                        Id = fflib_IDGenerator.generate(sflib_RecordAction__c.SObjectType),
+                        Name = 'Action D'
+                ),
+                'Idle'
+        );
+
+        System.Assert.areEqual(sflib_RecordActionsController.ActionState.RUNNING.toString().toLowerCase(), actionDataA.state);
+        System.Assert.areEqual(sflib_RecordActionsController.ActionState.COMPLETED.toString().toLowerCase(), actionDataB.state);
+        System.Assert.areEqual(sflib_RecordActionsController.ActionState.FAILED.toString().toLowerCase(), actionDataC.state);
+        System.Assert.areEqual(sflib_RecordActionsController.ActionState.IDLE.toString().toLowerCase(), actionDataD.state);
     }
 }

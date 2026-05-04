@@ -8,7 +8,7 @@ The actions are displayed in a list or tiles view. It can contain an action menu
 
 ![List View](record-action_list-view.png "List View")
 
-![tiles](record-action_tile-view.png "Tiles View")
+![tiles](record-action.png "Tiles View")
 
 
 __Contents__:
@@ -43,6 +43,25 @@ Showing actions based on a formula with conditions like
 
 ![Record Actions Setup Settings](record-action_setup-settings.png "Record Actions Setup Settings")<br/>
 _Configurable settings can be managed under the settings tab_
+
+#### Enable History Log
+When enabled, log items will be created in the `sflib_RecordActionHistory__c` object. The log includes;
+- running user
+- date and time when it was executed
+- status of the flow
+- error messages, when they occur
+
+#### Use 24 hour clock
+Lists the time in either AM/PM or military<br/>
+Note: only available when the history log is enabled
+
+#### Highlight active and used actions
+Shows running and executed actions in a different color<br/>
+Note: only available when the history log is enabled
+
+#### See & Execute All Actions
+Allow the user to switch between seeing only relevant record actions, based on their condition, or all record action.   
+It will limit the visible actions to only list actions that match the record type and the user.
 
 ## Database Schema
 ```mermaid
@@ -108,12 +127,13 @@ __For Use In__
 Lightning Experience Components, Lightning Pages, Standaline Lightning App
 
 #### Attributes
-| Attribute   | Description                                                                             | Type   | Default          | Required |
-|-------------|-----------------------------------------------------------------------------------------|--------|------------------|----------|
-| `record-id` | The record Id for which to show the actions                                             | String |                  | Yes      |
-| `title`     | The title of the component                                                              | String | `Actions`        |
-| `variant`   | The variant type of how the component displays.<br/>Valid values are `list` and `tiles` | Enum   | `list`           |
-| `icon-name` | The name of the icon to display                                                         | String | `custom:custom9` | 
+| Attribute     | Description                                                                             | Type    | Default                           | Required |
+|---------------|-----------------------------------------------------------------------------------------|---------|-----------------------------------|----------|
+| `icon-name`   | The name of the icon to display                                                         | String  | `custom:custom9`                  | 
+| `record-id`   | The record Id for which to show the actions                                             | String  |                                   | Yes      |
+| `title`       | The title of the component                                                              | String  | `Actions`                         |
+| `variant`     | The variant type of how the component displays.<br/>Valid values are `list` and `tiles` | Enum    | `list`                            |
+| `show-search` | Show a search bar at the top of the component to filter the actions                     | Boolean | `false`, shows only a search icon | no       |
 
 #### Methods
 The component has no methods.
@@ -128,7 +148,7 @@ The component has no methods.
 </template>
 ```
 
-![tiles](record-action_tile-view.png "Tiles View")
+![tiles](record-action.png "Tiles View")
 
 
 ## Permissions

@@ -48,16 +48,16 @@ public with sharing class sflib_RecordActionsService
 	 */
 	private static sflib_IRecordActionsService implementationReplacement;
 
-	/**
-	 * Get a list of available record actions for the given record ids
-	 *
-	 * @param idSet A set of `Id` values for which to return their record actions
-	 *
-	 * @return Returns A domain with record actions grouped in by the record id
-	 *
-	 * @see sflib_IRecordActions
-	 * @see sflib_RecordActions
-	 */
+    /**
+     * Get a list of available record actions for the given record ids
+     *
+     * @param idSet A set of `Id` values for which to return their record actions
+     *
+     * @return Returns A domain with record actions grouped in by the record id
+     *
+     * @see sflib_IRecordActions
+     * @see sflib_RecordActions
+     */
 	public static Map<Id, sflib_IRecordActions> getActions(Set<Id> idSet)
 	{
 		return newInstance().getActions(idSet);
